@@ -16,31 +16,60 @@
         var scene = new THREE.Scene();
         var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.2, 1000);
 
+
+        var humanGroup = new THREE.Object3D;
         var renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
                 
-        camera.position.z = 4;
+        camera.position.z = 0;
+        camera.up.set(0, 1, 0);
+        camera.lookAt(0, 0, 0);
 
-        const objects = [];
+        var torsoCylinderGeometry = new THREE.CylinderGeometry(0.15,0.15, 1.05, 0.35);
+        var torsoCylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xcfffff });
 
-        // use just one sphere for everything
-        const radius = 0.2;
-        const widthSegments = 50;
-        const heightSegments = 50;
-        const sphereGeometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
 
-        const sunMaterial = new THREE.MeshPhongMaterial({ emissive: 0xFFFF00 });
-        const sunMesh = new THREE.Mesh(sphereGeometry, sunMaterial);
+        var torsoCylinder = new THREE.Mesh(torsoCylinderGeometry, torsoCylinderMaterial);
 
-        sunMesh.position.x = -2.40;
-        sunMesh.position.y = 0.7;
-        sunMesh.position.z = 0;
+        var neckCylinderGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.2, 0.05);
+        var neckCylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xcf1fff });
 
-        scene.add(sunMesh);
-        objects.push(sunMesh); 
+        var neckCylinder = new THREE.Mesh(neckCylinderGeometry, neckCylinderMaterial);
+        var torsoCylinder = new THREE.Mesh(torsoCylinderGeometry, torsoCylinderMaterial);
 
+
+        torsoCylinder.position.set(0.55,0.12,-4);
+        neckCylinder.position.set(0.55, 0.75, -4);
+        
+        humanGroup.add(torsoCylinder);
+        humanGroup.add(neckCylinder);
+
+        const sphereGeometry = new THREE.SphereBufferGeometry(
+            0.25, 20, 20);
+
+        const headMaterial = new THREE.MeshPhongMaterial({ emissive: 0xFFFF00 });
+        const headMesh = new THREE.Mesh(sphereGeometry, headMaterial);
+        humanGroup.add(headMesh);
+
+        headMesh.position.set(0.55, 1, -4);
+
+        var leftArms = createArmGroup();
+        var rightArms = createArmGroup();
+
+        rightArms.position.set(0.8,0.4,-4);
+
+        leftArms.position.set(0.3, 0.4, -4);
+
+        humanGroup.position.z = 0;
+        humanGroup.position.x = -2.5;
+
+        humanGroup.add(leftArms);
+        humanGroup.add(rightArms);
+        scene.add(humanGroup);
+
+      
         renderer.render(scene, camera);
 
 
@@ -68,7 +97,23 @@
         //animate();
 
 
+        function createArmGroup() {
 
+            var armGroup = new THREE.Object3D;
+            var armMaterial = new THREE.MeshBasicMaterial({ color: 0xc11f0f });
+            var armMaterial2 = new THREE.MeshBasicMaterial({ color: 0xc11fff });
+            var upperArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
+            var upperArmCylinder = new THREE.Mesh(upperArmCylinderGeometry, armMaterial);
+
+            var lowerArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
+            var lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial2);
+
+            lowerArmCylinder.position.y = -0.35;
+            armGroup.add(lowerArmCylinder);
+            armGroup.add(upperArmCylinder);
+            return armGroup;
+
+        }
     </script>
 
 </body>
