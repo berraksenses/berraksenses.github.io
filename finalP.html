@@ -27,7 +27,7 @@
         camera.up.set(0, 1, 0);
         camera.lookAt(0, 0, 0);
 
-        var torsoCylinderGeometry = new THREE.CylinderGeometry(0.15,0.15, 1.05, 0.35);
+        var torsoCylinderGeometry = new THREE.CylinderGeometry(0.23,0.23, 0.95, 0.35);
         var torsoCylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xcfffff });
 
 
@@ -40,7 +40,7 @@
         var torsoCylinder = new THREE.Mesh(torsoCylinderGeometry, torsoCylinderMaterial);
 
 
-        torsoCylinder.position.set(0.55,0.12,-4);
+        torsoCylinder.position.set(0.55,0.14,-4);
         neckCylinder.position.set(0.55, 0.75, -4);
         
         humanGroup.add(torsoCylinder);
@@ -58,15 +58,23 @@
         var leftArms = createArmGroup();
         var rightArms = createArmGroup();
 
-        rightArms.position.set(0.8,0.4,-4);
+        var leftLegs = createLegGroup();
+        var rightLegs = createLegGroup();
 
+        rightArms.position.set(0.8,0.4,-4);
         leftArms.position.set(0.3, 0.4, -4);
+
+        rightLegs.position.set(0.65, -0.4, -4);
+        leftLegs.position.set(0.45, -0.4, -4);
+
 
         humanGroup.position.z = 0;
         humanGroup.position.x = -2.5;
 
         humanGroup.add(leftArms);
         humanGroup.add(rightArms);
+        humanGroup.add(rightLegs);
+        humanGroup.add(leftLegs);
         scene.add(humanGroup);
 
       
@@ -74,27 +82,6 @@
 
 
 
-        //var scene = new THREE.Scene();
-        //var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-
-        //var renderer = new THREE.WebGLRenderer();
-        //renderer.setSize(window.innerWidth, window.innerHeight);
-        //document.body.appendChild(renderer.domElement);
-
-        //var geometry = new THREE.BoxGeometry();
-        //var material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-        //var cube = new THREE.Mesh(geometry, material);
-        //scene.add(cube);
-
-        //camera.position.z = 5;
-
-        //function animate() {
-        //    requestAnimationFrame(animate);
-        //    cube.rotation.x += 0.01;
-        //    cube.rotation.y += 0.01;
-        //    renderer.render(scene, camera);
-        //}
-        //animate();
 
 
         function createArmGroup() {
@@ -112,6 +99,25 @@
             armGroup.add(lowerArmCylinder);
             armGroup.add(upperArmCylinder);
             return armGroup;
+
+        }
+
+        function createLegGroup() {
+
+            var legGroup = new THREE.Object3D;
+            var legMaterial = new THREE.MeshPhongMaterial({ emissive: 0xc11f0f });
+            var legMaterial2 = new THREE.MeshBasicMaterial({ emissive: 0xc11fff });
+
+            var upperLegCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.35, 0.005);
+            var upperLegCylinder = new THREE.Mesh(upperLegCylinderGeometry, legMaterial);
+
+            var lowerLegCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.35, 0.005);
+            var lowerLegCylinder = new THREE.Mesh(lowerLegCylinderGeometry, legMaterial2);
+
+            lowerLegCylinder.position.y = -0.35;
+            legGroup.add(lowerLegCylinder);
+            legGroup.add(upperLegCylinder);
+            return legGroup;
 
         }
     </script>
