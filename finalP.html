@@ -144,8 +144,8 @@
         function createLegGroup() {
 
             var legGroup = new THREE.Object3D;
-            var legMaterial;
-            var legMaterial2;
+          
+           
 
             var upperLegCylinderGeometry;
             var upperLegCylinder;
@@ -153,25 +153,10 @@
             var lowerLegCylinderGeometry;
             var lowerLegCylinder;
 
-            if (dogLegFlag) {
+          
 
-                legMaterial = new THREE.MeshPhongMaterial({ emissive: 0xD2691E  });
-
-
-                upperLegCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.35, 0.005);
-                upperLegCylinder = new THREE.Mesh(upperLegCylinderGeometry, legMaterial);
-
-                lowerLegCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.35, 0.005);
-                lowerLegCylinder = new THREE.Mesh(lowerLegCylinderGeometry, legMaterial);
-
-                legGroup.add(lowerLegCylinder);
-                legGroup.add(upperLegCylinder);
-            }
-
-            else {
-
-               legMaterial = new THREE.MeshPhongMaterial({ emissive: 0xc11f0f });
-               legMaterial2 = new THREE.MeshBasicMaterial({ emissive: 0xc11fff });
+            var legMaterial = new THREE.MeshPhongMaterial({ emissive: 0xc11f0f });
+            var legMaterial2 = new THREE.MeshBasicMaterial({ emissive: 0xc11fff });
 
 
                upperLegCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.95, 0.005);
@@ -180,7 +165,7 @@
                 lowerLegCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.45, 0.005);
                 lowerLegCylinder = new THREE.Mesh(lowerLegCylinderGeometry, legMaterial2);
 
-            }
+            
           
             lowerLegCylinder.position.y = -0.35;
             legGroup.add(lowerLegCylinder);
@@ -204,7 +189,9 @@
 
             var neckCylinder = new THREE.Mesh(neckCylinderGeometry, neckCylinderMaterial);
 
+            var tailCylinderGeometry = new THREE.CylinderGeometry(0.3, 0.15, 0.05, 0.8);
 
+        
             const sphereGeometryTorso = sphereGeometry.scale(2.5, 1, 1);
 
             const torsoMaterial = new THREE.MeshPhongMaterial({ emissive: 0xD2691E });
@@ -218,7 +205,9 @@
             const rightLegs = createArmGroup();
             const rightArms = createArmGroup();
 
-            
+            var tailMesh = new THREE.Mesh(tailCylinderGeometry, torsoMaterial);
+            tailMesh.rotateZ(Math.PI / 7);
+
             torsoMesh.position.set(1.5, -0.4, -4);
             headMesh.position.set(0.87, 0.07, -4);
             neckCylinder.rotateZ(Math.PI / 7);
@@ -230,8 +219,10 @@
             leftLegs.position.set(1.7, -0.7, -3.85);
             rightLegs.position.set(1.7,-0.7,-4.25 );
 
+            tailMesh.position.set(2.2,-0.2,-4);
             //dogGroup.rotateZ(Math.PI); 
-             //dogGroup.rotateZ(Math.PI);
+            //dogGroup.rotateZ(Math.PI);
+            dogGroup.add(tailMesh);
 
             dogGroup.position.set(-2,0,-4);
             dogGroup.add(headMesh);
@@ -241,6 +232,7 @@
             dogGroup.add(leftLegs);
             dogGroup.add(rightLegs);
             dogGroup.add(torsoMesh);
+            dogGroup.scale.set(2, 2, 2);
            // dogGroup.rotateY(Math.PI / 2);
             //dogGroup.rotateY(Math.PI/2) ;
             scene.add(dogGroup);
