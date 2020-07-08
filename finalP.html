@@ -155,78 +155,6 @@
 
         }
 
-        function createHumanoid() {
-
-            dogLegFlag = false;
-
-            var torsoCylinderGeometry = new THREE.CylinderGeometry(0.23, 0.23, 0.95, 0.35);
-            var torsoCylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xcf1ff6 });
-
-            var torsoCylinder = new THREE.Mesh(torsoCylinderGeometry, torsoCylinderMaterial);
-
-            var neckCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.18, 0.05);
-            var neckCylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xcf1f1f });
-
-            var neckCylinder = new THREE.Mesh(neckCylinderGeometry, neckCylinderMaterial);
-
-            var torsoCylinder = new THREE.Mesh(torsoCylinderGeometry, torsoCylinderMaterial);
-            torsoCylinder.position.set(0.55, 0.14, -4);
-            torsoCylinder.add(neckCylinder);
-
-            humanUpperGroup.add(torsoCylinder);
-
-
-            const sphereGeometry = new THREE.SphereBufferGeometry(
-                0.18, 20, 20);
-
-            const headMaterial = new THREE.MeshPhongMaterial({ emissive: 0xFFFF00 });
-            const headMesh = new THREE.Mesh(sphereGeometry, headMaterial);
-            neckCylinder.add(headMesh);
-
-            headMesh.position.y = 0.24;
-            neckCylinder.position.y = 0.55;
-            neckCylinder.position.x = 0;
-
-
-            var leftArms = createArm();
-            var rightArms = createArm();
-
-            var leftLegs = createLegs();
-            var rightLegs = createLegs();
-
-            rightArms.position.x = 0.29;
-            rightArms.position.y = 0.25;
-            leftArms.position.x = -0.27;
-            leftArms.position.y = 0.25;
-
-
-            rightLegs.position.set(0.65, -0.4, -4);
-            leftLegs.position.set(0.45, -0.4, -4);
-
-            torsoCylinder.add(rightArms);
-            torsoCylinder.add(leftArms);
-            humanUpperGroup.add(leftLegs);
-            humanUpperGroup.add(rightLegs);
-
-            //humanUpperGroup.position.z = 0;
-            //humanUpperGroup.position.y = 0;
-            //humanUpperGroup.position.x = 0;
-
-            //humanUpperGroup.translateY(-0.2); when you will use the decreasing part of the upper body you will use this in the animation
-            //humanUpperGroup.rotateZ(radians); //when the human will get the stick from the ground he will use this to lay down 
-            console.log(humanUpperGroup.position);
-
-            //humanGroup.position.z = 0;
-            humanGroup.position.x = -2;
-
-            humanGroup.add(humanUpperGroup);
-            humanUpperGroup.rotateZ(Math.PI);
-           
-            //humanGroup.scale.set(1,1,1.2);
-            scene.add(humanGroup);
-
-        }
-
         function createLegs() {
 
             var upperLegCylinderGeometry;
@@ -253,6 +181,80 @@
 
         }
 
+
+
+        function createHumanoid() {
+
+            dogLegFlag = false;
+
+            var torsoCylinderGeometry = new THREE.CylinderGeometry(0.23, 0.23, 0.95, 0.35);
+            var torsoCylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xcf1ff6 });
+
+            var torsoCylinder = new THREE.Mesh(torsoCylinderGeometry, torsoCylinderMaterial);
+
+            var neckCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.18, 0.05);
+            var neckCylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xcf1f1f });
+
+            var neckCylinder = new THREE.Mesh(neckCylinderGeometry, neckCylinderMaterial);
+
+            var torsoCylinder = new THREE.Mesh(torsoCylinderGeometry, torsoCylinderMaterial);
+            torsoCylinder.position.set(0.55, 0.14, 0);
+            torsoCylinder.add(neckCylinder);
+
+            humanUpperGroup.add(torsoCylinder);
+
+
+            const sphereGeometry = new THREE.SphereBufferGeometry(
+                0.18, 20, 20);
+
+            const headMaterial = new THREE.MeshPhongMaterial({ emissive: 0xFFFF00 });
+            const headMesh = new THREE.Mesh(sphereGeometry, headMaterial);
+            neckCylinder.add(headMesh);
+
+            headMesh.position.y = 0.24;
+            neckCylinder.position.y = 0.55;
+            neckCylinder.position.x = 0;
+            humanUpperGroup.position.set(0,0,-4);
+
+
+            var leftArms = createArm();
+            var rightArms = createArm();
+
+            var leftLegs = createLegs();
+            var rightLegs = createLegs();
+
+            rightArms.position.x = 0.29;
+            rightArms.position.y = 0.25;
+            leftArms.position.x = -0.27;
+            leftArms.position.y = 0.25;
+            
+            rightLegs.position.x = 0.45;
+            rightLegs.position.y = -0.5;
+
+            leftLegs.position.x = 0.65;
+            leftLegs.position.y = -0.5;
+            
+
+            torsoCylinder.add(rightArms);
+            torsoCylinder.add(leftArms);
+            humanUpperGroup.add(leftLegs);
+            humanUpperGroup.add(rightLegs);
+            //humanUpperGroup.translateY(-0.2); when you will use the decreasing part of the upper body you will use this in the animation
+            //humanUpperGroup.rotateZ(radians); //when the human will get the stick from the ground he will use this to lay down 
+
+            torsoCylinder.rotateZ(Math.PI / 180 * 90);
+            
+            //humanGroup.position.z = 0;
+            humanGroup.position.x = -2;
+
+            humanGroup.add(humanUpperGroup);
+           
+            //humanGroup.scale.set(1,1,1.2);
+            scene.add(humanGroup);
+
+        }
+
+     
 
        
 
