@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-
-
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+console.log("controls", OrbitControls);
 let leftDogArm;
 let rightDogArm;
 let leftDogLeg;
@@ -25,6 +25,7 @@ function initialization(component) {
     
 
     camera.up.set(0, 1, 0);
+    camera.position.set(0, 7, 7);
     camera.lookAt(0, 0, 0);
 
     createHumanoid();
@@ -34,6 +35,10 @@ function initialization(component) {
     renderer = new THREE.WebGLRenderer({ canvas });
 
     renderer.render(scene, camera);
+
+    const controls = new OrbitControls(camera, canvas);
+    controls.target.set(0, 2, -1);
+    controls.update();
     const mainLoop = () => {
 
         if (resizeRendererToDisplaySize(renderer)) {
