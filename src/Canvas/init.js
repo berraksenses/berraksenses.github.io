@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 
-let dogLegFlag = false
 
 let leftDogArm;
 let rightDogArm;
@@ -15,11 +14,11 @@ const near = 0.001;
 const far = 100000;
 const camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, near, far);
 
-let scene = new THREE.Scene();
+const scene = new THREE.Scene();
 
 
-let humanGroup = new THREE.Object3D();
-let humanUpperGroup = new THREE.Object3D();
+const humanGroup = new THREE.Object3D();
+const humanUpperGroup = new THREE.Object3D();
 let renderer;
 
 function initialization(component) {
@@ -30,6 +29,7 @@ function initialization(component) {
 
     createHumanoid();
     createDoggo();
+    
     const canvas = document.getElementById("canvas");
     renderer = new THREE.WebGLRenderer({ canvas });
 
@@ -53,13 +53,12 @@ function initialization(component) {
             rightDogLeg.children[0].rotateZ(-Math.PI / 180);
             leftDogLeg.children[0].rotateZ(-Math.PI / 180);
 
-            leftDogArm.children[0].rotateZ(Math.PI / 180);
+            leftDogArm.children[0].rotateZ(-Math.PI / 180);
             rightDogArm.children[0].rotateZ(-Math.PI / 180);
 
            (time === 20) ? (legForwardFlag = false) : time += 1;
         }
         else {
-            //alert(time); 
             leftDogArm.rotation.z += Math.PI /180;                
             rightDogArm.rotation.z -= Math.PI / 180;
 
@@ -72,22 +71,20 @@ function initialization(component) {
             leftDogArm.children[0].rotateZ(Math.PI / 180);
             rightDogArm.children[0].rotateZ(Math.PI / 180);
 
-
-
             (time === 0) ? legForwardFlag = true : time -= 1;
 
         }
 
-           requestAnimationFrame(mainLoop)
-
-           renderer.render(scene, camera);
-
+        renderer.render(scene, camera);
+        // when canvas is removed from dom then stop the infinite loop
+        if (component.isActive)
+            requestAnimationFrame(mainLoop);
     }
     mainLoop();
 }
 
 
-function createArm() {
+function createArm(dogLegFlag) {
 
     let armMaterial;
 
@@ -105,9 +102,7 @@ function createArm() {
         lowerArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
         lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial);
 
-    }
-
-    else {
+    } else {
         const armMaterial2 = new THREE.MeshBasicMaterial({ color: 0xcfffff });
 
         armMaterial = new THREE.MeshBasicMaterial({ color: 0xD2691E });
@@ -152,36 +147,34 @@ function createLegs() {
 
 function createHumanoid() {
 
-    dogLegFlag = false;
+    const dogLegFlag = false;
 
-    let torsoCylinderGeometry = new THREE.CylinderGeometry(0.23, 0.23, 0.95, 0.35);
+    const torsoCylinderGeometry = new THREE.CylinderGeometry(0.23, 0.23, 0.95, 0.35);
     const torsoCylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xcf1ff6 });
 
-    let torsoCylinder = new THREE.Mesh(torsoCylinderGeometry, torsoCylinderMaterial);
+    const torsoCylinder = new THREE.Mesh(torsoCylinderGeometry, torsoCylinderMaterial);
 
     const neckCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.18, 0.05);
     const neckCylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xcf1f1f });
 
     const neckCylinder = new THREE.Mesh(neckCylinderGeometry, neckCylinderMaterial);
 
-    torsoCylinder = new THREE.Mesh(torsoCylinderGeometry, torsoCylinderMaterial);
     humanGroup.position.set(-2, 0, -4);
     torsoCylinder.add(neckCylinder);
-
-    humanUpperGroup.add(torsoCylinder);
 
     const sphereGeometry = new THREE.SphereBufferGeometry(
         0.18, 20, 20);
 
     const headMaterial = new THREE.MeshPhongMaterial({ emissive: 0xFFFF00 });
     const headMesh = new THREE.Mesh(sphereGeometry, headMaterial);
+    
     neckCylinder.add(headMesh);
 
     headMesh.translateY(0.27);
     neckCylinder.translateY(0.55);
 
-    const leftArms = createArm();
-    const rightArms = createArm();
+    const leftArms = createArm(dogLegFlag);
+    const rightArms = createArm(dogLegFlag);
 
     const leftLegs = createLegs();
     const rightLegs = createLegs();
@@ -200,11 +193,14 @@ function createHumanoid() {
 
     torsoCylinder.add(rightArms);
     torsoCylinder.add(leftArms);
+    
+    humanUpperGroup.add(torsoCylinder);
     humanUpperGroup.add(leftLegs);
     humanUpperGroup.add(rightLegs);
     //humanUpperGroup.translateY(-0.2); when you will use the decreasing part of the upper body you will use this in the animation
     //humanUpperGroup.rotateZ(radians); //when the human will get the stick from the ground he will use this to lay down 
     humanGroup.add(humanUpperGroup);
+
    
     //humanGroup.scale.set(1,1,1.2); 
     scene.add(humanGroup);
@@ -216,12 +212,8 @@ function createHumanoid() {
 function createDoggo() {
 
     dogGroup = new THREE.Object3D();
-    dogLegFlag = true;
+    const dogLegFlag = true;
 
-    const headGeometry = new THREE.SphereBufferGeometry(
-        0.25, 20, 20);
-    const sphereGeometry = new THREE.SphereBufferGeometry(
-        0.25, 20, 40);
 
     const eyesGeometry = new THREE.SphereBufferGeometry(
         0.045, 50, 50);
@@ -251,19 +243,20 @@ function createDoggo() {
 
     const tailCylinderGeometry = new THREE.CylinderGeometry(0.23, .05, 0.05, 0.06);
 
-
+    const sphereGeometry = new THREE.SphereBufferGeometry(0.25, 20, 40);
     const sphereGeometryTorso = sphereGeometry.scale(2.5, 1, 1);
 
     const torsoMaterial = new THREE.MeshPhongMaterial({ emissive: 0xD2691E });
     const torsoMesh = new THREE.Mesh(sphereGeometryTorso, torsoMaterial);
 
+    const headGeometry = new THREE.SphereBufferGeometry(0.25, 20, 20);
     const headMesh = new THREE.Mesh(headGeometry, torsoMaterial);
 
-    leftDogLeg = createArm();
-    leftDogArm = createArm();
+    leftDogLeg = createArm(dogLegFlag);
+    leftDogArm = createArm(dogLegFlag);
 
-    rightDogLeg = createArm();
-    rightDogArm = createArm();
+    rightDogLeg = createArm(dogLegFlag);
+    rightDogArm = createArm(dogLegFlag);
 
     const tailMesh = new THREE.Mesh(tailCylinderGeometry, torsoMaterial);
     tailMesh.rotateZ(Math.PI / 7);
