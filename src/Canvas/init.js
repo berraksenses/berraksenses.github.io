@@ -47,34 +47,34 @@ function initialization(component) {
             camera.updateProjectionMatrix();
         }
 
-        if (time <= 20 && legForwardFlag) {
+        if (time <= 30 && legForwardFlag) {
 
-            leftDogArm.rotation.z -= (Math.PI / 180);
-            rightDogArm.rotation.z += Math.PI / 180; 
-            rightDogLeg.rotation.z -= Math.PI / 180;
+            leftDogArm.rotateZ(-Math.PI / 180);
+            rightDogArm.rotateZ(+Math.PI / 180); 
+            rightDogLeg.rotateZ(-Math.PI / 180);
 
-            leftDogLeg.rotation.z += Math.PI / 180;
+            leftDogLeg.rotateZ(+Math.PI / 180);
 
             rightDogLeg.children[0].rotateZ(-Math.PI / 180);
-            leftDogLeg.children[0].rotateZ(-Math.PI / 180);
+            leftDogLeg.children[0].rotateZ(+Math.PI / 180);
 
             leftDogArm.children[0].rotateZ(-Math.PI / 180);
-            rightDogArm.children[0].rotateZ(-Math.PI / 180);
+            rightDogArm.children[0].rotateZ(+Math.PI / 180);
 
-           (time === 20) ? (legForwardFlag = false) : time += 1;
+           (time === 30) ? (legForwardFlag = false) : time += 1;
         }
         else {
-            leftDogArm.rotation.z += Math.PI /180;                
-            rightDogArm.rotation.z -= Math.PI / 180;
+            leftDogArm.rotateZ(+Math.PI /180);                
+            rightDogArm.rotateZ(-Math.PI / 180);
 
-            rightDogLeg.rotation.z += Math.PI / 180; 
-            leftDogLeg.rotation.z -= Math.PI / 180;
+            rightDogLeg.rotateZ(+Math.PI / 180); 
+            leftDogLeg.rotateZ(-Math.PI / 180);
 
-            rightDogLeg.children[0].rotateZ(Math.PI / 180);
-            leftDogLeg.children[0].rotateZ(Math.PI / 180);
+            rightDogLeg.children[0].rotateZ(+Math.PI / 180);
+            leftDogLeg.children[0].rotateZ(-Math.PI / 180);
 
-            leftDogArm.children[0].rotateZ(Math.PI / 180);
-            rightDogArm.children[0].rotateZ(Math.PI / 180);
+            leftDogArm.children[0].rotateZ(+Math.PI / 180);
+            rightDogArm.children[0].rotateZ(-Math.PI / 180);
 
             (time === 0) ? legForwardFlag = true : time -= 1;
 
@@ -98,16 +98,16 @@ function createArm(dogLegFlag) {
     let upperArmCylinderGeometry;
     let lowerArmCylinderGeometry;
 
-    if (dogLegFlag) {
-        armMaterial = new THREE.MeshPhongMaterial({ emissive: 0xD2691E });
+    //if (dogLegFlag) {
+    //    armMaterial = new THREE.MeshPhongMaterial({ emissive: 0xD2691E });
 
-        upperArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
-        upperArmCylinder = new THREE.Mesh(upperArmCylinderGeometry, armMaterial);
+    //    upperArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
+    //    upperArmCylinder = new THREE.Mesh(upperArmCylinderGeometry, armMaterial);
 
-        lowerArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
-        lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial);
+    //    lowerArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
+    //    lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial);
 
-    } else {
+    //} else {
         const armMaterial2 = new THREE.MeshBasicMaterial({ color: 0xcfffff });
 
         armMaterial = new THREE.MeshBasicMaterial({ color: 0xD2691E });
@@ -116,10 +116,13 @@ function createArm(dogLegFlag) {
 
         lowerArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
         lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial2);
-    }
 
-    lowerArmCylinder.translateY(-0.35);
+    
     upperArmCylinder.add(lowerArmCylinder);
+    lowerArmCylinder.translateY(-0.35);
+ 
+    //lowerArmCylinder.rotateZ(Math.PI);
+
     return upperArmCylinder;
 
 }
@@ -297,12 +300,12 @@ function createDoggo() {
     rightDogArm.translateZ(0.2);
 
 
-    leftDogArm.translateX(-0.3);
+    leftDogArm.translateX(0.3);
     leftDogArm.translateY(-0.3);
-    leftDogArm.translateZ(-0.2);
+    //leftDogArm.translateZ(-0.2);
 
 
-    rightDogLeg.translateX(0.3);
+    rightDogLeg.translateX(-0.3);
     rightDogLeg.translateY(-0.3);
     rightDogLeg.translateZ(0.2);
 
@@ -310,6 +313,10 @@ function createDoggo() {
     leftDogLeg.translateX(-0.3);
     leftDogLeg.translateY(-0.3);
     leftDogLeg.translateZ(-0.2);
+
+
+
+    //leftDogArm.children[0].rotateZ(Math.PI);
 
 
 
