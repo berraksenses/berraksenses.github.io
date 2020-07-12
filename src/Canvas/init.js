@@ -1,6 +1,15 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-console.log("controls", OrbitControls);
+import Floor from './Models/Floor';
+import { 
+    GLOBAL_LIGHT_COLOR, 
+    GLOBAL_LIGHT_INTENSITY, 
+    GLOBAL_LIGHT_TARGET, 
+    GLOBAL_LIGHT_POSITION, 
+    AMBIENT_LIGHT_COLOR, 
+    AMBIENT_LIGHT_INTENSITY 
+} from '../constants';
+
 let leftDogArm;
 let rightDogArm;
 let leftDogLeg;
@@ -8,6 +17,7 @@ let rightDogLeg;
 let dogGroup;
 let time = 0;
 let legForwardFlag = true;
+
 
 const fov = 45;
 const near = 0.001;
@@ -21,7 +31,7 @@ const humanGroup = new THREE.Object3D();
 const humanUpperGroup = new THREE.Object3D();
 let renderer;
 
-function initialization(component) {
+function initialization(reactComponent) {
     
 
     camera.up.set(0, 1, 0);
@@ -39,6 +49,20 @@ function initialization(component) {
     const controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 2, -1);
     controls.update();
+    scene.add(Floor());
+
+    {
+        const directionalLight = new THREE.DirectionalLight( GLOBAL_LIGHT_COLOR, GLOBAL_LIGHT_INTENSITY );
+        directionalLight.target.position.copy(GLOBAL_LIGHT_TARGET);
+        directionalLight.position.copy(GLOBAL_LIGHT_POSITION);
+
+        const light = new THREE.AmbientLight(AMBIENT_LIGHT_COLOR, AMBIENT_LIGHT_INTENSITY);
+        
+        scene.add( light );
+        scene.add( directionalLight );
+        scene.add( directionalLight.target );
+    }
+
     const mainLoop = () => {
 
         if (resizeRendererToDisplaySize(renderer)) {
@@ -82,7 +106,7 @@ function initialization(component) {
 
         renderer.render(scene, camera);
         // when canvas is removed from dom then stop the infinite loop
-        if (component.isActive)
+        if (reactComponent.isActive)
             requestAnimationFrame(mainLoop);
     }
     mainLoop();
@@ -99,7 +123,7 @@ function createArm(dogLegFlag) {
     let lowerArmCylinderGeometry;
 
     //if (dogLegFlag) {
-    //    armMaterial = new THREE.MeshPhongMaterial({ emissive: 0xD2691E });
+    //    armMaterial = new THREE.MeshPhongMaterial({ color: 0xD2691E });
 
     //    upperArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
     //    upperArmCylinder = new THREE.Mesh(upperArmCylinderGeometry, armMaterial);
@@ -108,9 +132,9 @@ function createArm(dogLegFlag) {
     //    lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial);
 
     //} else {
-        const armMaterial2 = new THREE.MeshBasicMaterial({ color: 0xcfffff });
+        const armMaterial2 = new THREE.MeshPhongMaterial({ color: 0xcfffff });
 
-        armMaterial = new THREE.MeshBasicMaterial({ color: 0xD2691E });
+        armMaterial = new THREE.MeshPhongMaterial({ color: 0xD2691E });
         upperArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
         upperArmCylinder = new THREE.Mesh(upperArmCylinderGeometry, armMaterial);
 
@@ -134,8 +158,8 @@ function createLegs() {
 
     let lowerLegCylinderGeometry;
     let lowerLegCylinder;
-    let legMaterial = new THREE.MeshPhongMaterial({ emissive: 0xc11f0f });
-    let legMaterial2 = new THREE.MeshBasicMaterial({ emissive: 0xc11fff });
+    let legMaterial = new THREE.MeshPhongMaterial({ color: 0xc11f0f });
+    let legMaterial2 = new THREE.MeshPhongMaterial({ color: 0xc11fff });
 
 
     upperLegCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.95, 0.005);
@@ -158,12 +182,12 @@ function createHumanoid() {
     const dogLegFlag = false;
 
     const torsoCylinderGeometry = new THREE.CylinderGeometry(0.23, 0.23, 0.95, 0.35);
-    const torsoCylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xcf1ff6 });
+    const torsoCylinderMaterial = new THREE.MeshPhongMaterial({ color: 0xcf1ff6 });
 
     const torsoCylinder = new THREE.Mesh(torsoCylinderGeometry, torsoCylinderMaterial);
 
     const neckCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.18, 0.05);
-    const neckCylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xcf1f1f });
+    const neckCylinderMaterial = new THREE.MeshPhongMaterial({ color: 0xcf1f1f });
 
     const neckCylinder = new THREE.Mesh(neckCylinderGeometry, neckCylinderMaterial);
 
@@ -173,7 +197,7 @@ function createHumanoid() {
     const sphereGeometry = new THREE.SphereBufferGeometry(
         0.18, 20, 20);
 
-    const headMaterial = new THREE.MeshPhongMaterial({ emissive: 0xFFFF00 });
+    const headMaterial = new THREE.MeshPhongMaterial({ color: 0xFFFF00 });
     const headMesh = new THREE.Mesh(sphereGeometry, headMaterial);
     
     neckCylinder.add(headMesh);
@@ -225,18 +249,18 @@ function createDoggo() {
 
     const eyesGeometry = new THREE.SphereBufferGeometry(
         0.045, 50, 50);
-    const eyesMaterial = new THREE.MeshBasicMaterial({ color: 0xdad9ff});
+    const eyesMaterial = new THREE.MeshPhongMaterial({ color: 0xdad9ff});
 
     const eye1 = new THREE.Mesh(eyesGeometry, eyesMaterial);
     const eye2 = new THREE.Mesh(eyesGeometry, eyesMaterial);
 
-    const noseMaterial = new THREE.MeshBasicMaterial({ color: 0xda2c43 });
+    const noseMaterial = new THREE.MeshPhongMaterial({ color: 0xda2c43 });
     const nose = new THREE.Mesh(eyesGeometry, noseMaterial);
 
     dogGroup.position.set(1, 0, -4);
 
     const earGeometry = new THREE.BoxGeometry(0.08, 0.3, 0.2);
-    const earMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const earMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
     const ear1 = new THREE.Mesh(earGeometry, earMaterial);
     const ear2 = new THREE.Mesh(earGeometry, earMaterial);
 
@@ -245,7 +269,7 @@ function createDoggo() {
                 
 
     const neckCylinderGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.05, 0.05);
-    const neckCylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const neckCylinderMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
 
     const neckCylinder = new THREE.Mesh(neckCylinderGeometry, neckCylinderMaterial);
 
@@ -254,7 +278,7 @@ function createDoggo() {
     const sphereGeometry = new THREE.SphereBufferGeometry(0.25, 20, 40);
     const sphereGeometryTorso = sphereGeometry.scale(2.5, 1, 1);
 
-    const torsoMaterial = new THREE.MeshPhongMaterial({ emissive: 0xD2691E });
+    const torsoMaterial = new THREE.MeshPhongMaterial({ color: 0xD2691E });
     const torsoMesh = new THREE.Mesh(sphereGeometryTorso, torsoMaterial);
 
     const headGeometry = new THREE.SphereBufferGeometry(0.25, 20, 20);

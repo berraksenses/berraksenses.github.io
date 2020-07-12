@@ -15,7 +15,7 @@ class Canvas extends React.Component {
 
     render() {
         return (
-            <canvas id="canvas"/>
+                <canvas id="canvas"/>
         );
     }
 }
