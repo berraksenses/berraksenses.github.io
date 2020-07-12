@@ -10,6 +10,42 @@ import {
     AMBIENT_LIGHT_INTENSITY 
 } from '../constants';
 
+const states = {
+    humanoid: {
+        torso: 0,
+        neck: 0,
+        
+        leftUpperArm: 0,
+        rightUpperArm: 0,
+        
+        leftLowerArm: 0,
+        rightLowerArm: 0,
+
+        rightUpperLeg: 0,
+        leftUpperLeg: 0,
+
+        rightLowerLeg: 0,
+        leftLowerLeg: 0,
+    },
+    dog: {
+        torso: 0,
+        neck: 0,
+        tail: 0,
+        
+        leftUpperArm: 0,
+        rightUpperArm: 0,
+        
+        leftLowerArm: 0,
+        rightLowerArm: 0,
+
+        rightUpperLeg: 0,
+        leftUpperLeg: 0,
+
+        rightLowerLeg: 0,
+        leftLowerLeg: 0,
+    }
+}
+
 let leftDogArm;
 let rightDogArm;
 let leftDogLeg;
@@ -39,7 +75,12 @@ function initialization(reactComponent) {
     camera.lookAt(0, 0, 0);
 
     createHumanoid();
-    createDoggo();
+    const doggo = createDoggo();
+    scene.add(doggo.rootGroup);
+    
+    Object.entries(states.dog).forEach(pair => {
+        
+    });
     
     const canvas = document.getElementById("canvas");
     renderer = new THREE.WebGLRenderer({ canvas });
@@ -71,38 +112,38 @@ function initialization(reactComponent) {
             camera.updateProjectionMatrix();
         }
 
-        if (time <= 30 && legForwardFlag) {
+        // if (time <= 30 && legForwardFlag) {
 
-            leftDogArm.rotateZ(-Math.PI / 180);
-            rightDogArm.rotateZ(+Math.PI / 180); 
-            rightDogLeg.rotateZ(-Math.PI / 180);
+        //     leftDogArm.rotateZ(-Math.PI / 180);
+        //     rightDogArm.rotateZ(+Math.PI / 180); 
+        //     rightDogLeg.rotateZ(-Math.PI / 180);
 
-            leftDogLeg.rotateZ(+Math.PI / 180);
+        //     leftDogLeg.rotateZ(+Math.PI / 180);
 
-            rightDogLeg.children[0].rotateZ(-Math.PI / 180);
-            leftDogLeg.children[0].rotateZ(+Math.PI / 180);
+        //     rightDogLeg.children[0].rotateZ(-Math.PI / 180);
+        //     leftDogLeg.children[0].rotateZ(+Math.PI / 180);
 
-            leftDogArm.children[0].rotateZ(-Math.PI / 180);
-            rightDogArm.children[0].rotateZ(+Math.PI / 180);
+        //     leftDogArm.children[0].rotateZ(-Math.PI / 180);
+        //     rightDogArm.children[0].rotateZ(+Math.PI / 180);
 
-           (time === 30) ? (legForwardFlag = false) : time += 1;
-        }
-        else {
-            leftDogArm.rotateZ(+Math.PI /180);                
-            rightDogArm.rotateZ(-Math.PI / 180);
+        //    (time === 30) ? (legForwardFlag = false) : time += 1;
+        // }
+        // else {
+        //     leftDogArm.rotateZ(+Math.PI /180);                
+        //     rightDogArm.rotateZ(-Math.PI / 180);
 
-            rightDogLeg.rotateZ(+Math.PI / 180); 
-            leftDogLeg.rotateZ(-Math.PI / 180);
+        //     rightDogLeg.rotateZ(+Math.PI / 180); 
+        //     leftDogLeg.rotateZ(-Math.PI / 180);
 
-            rightDogLeg.children[0].rotateZ(+Math.PI / 180);
-            leftDogLeg.children[0].rotateZ(-Math.PI / 180);
+        //     rightDogLeg.children[0].rotateZ(+Math.PI / 180);
+        //     leftDogLeg.children[0].rotateZ(-Math.PI / 180);
 
-            leftDogArm.children[0].rotateZ(+Math.PI / 180);
-            rightDogArm.children[0].rotateZ(-Math.PI / 180);
+        //     leftDogArm.children[0].rotateZ(+Math.PI / 180);
+        //     rightDogArm.children[0].rotateZ(-Math.PI / 180);
 
-            (time === 0) ? legForwardFlag = true : time -= 1;
+        //     (time === 0) ? legForwardFlag = true : time -= 1;
 
-        }
+        // }
 
         renderer.render(scene, camera);
         // when canvas is removed from dom then stop the infinite loop
@@ -240,7 +281,9 @@ function createHumanoid() {
 }
 
 
-
+/**
+ * 
+ */
 function createDoggo() {
 
     dogGroup = new THREE.Object3D();
@@ -257,7 +300,7 @@ function createDoggo() {
     const noseMaterial = new THREE.MeshPhongMaterial({ color: 0xda2c43 });
     const nose = new THREE.Mesh(eyesGeometry, noseMaterial);
 
-    dogGroup.position.set(1, 0, -4);
+    dogGroup.position.set(1, 1, -4);
 
     const earGeometry = new THREE.BoxGeometry(0.08, 0.3, 0.2);
     const earMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
@@ -354,7 +397,26 @@ function createDoggo() {
     neckCylinder.add(headMesh);
 
     dogGroup.add(torsoMesh);
-    scene.add(dogGroup);
+    //scene.add(dogGroup);
+    
+    return {
+        rootGroup: dogGroup,
+        
+        neck: neckCylinder,
+        tail: tailMesh,
+        
+        rightUpperArm: rightDogArm,
+        rightLowerArm: rightDogArm.children[0],
+
+        leftUpperArm: leftDogArm,
+        leftLowerArm: leftDogArm.children[0],
+
+        rightUpperLeg: rightDogLeg,
+        rightLowerLeg: rightDogLeg.children[0],
+
+        leftUpperLeg: leftDogLeg,
+        leftLowerLeg: leftDogLeg.children[0]
+    }
 
 
 }
