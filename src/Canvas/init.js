@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import Floor from './Models/Floor';
+import dat from 'dat.gui';
 import { 
     GLOBAL_LIGHT_COLOR, 
     GLOBAL_LIGHT_INTENSITY, 
@@ -9,6 +10,7 @@ import {
     AMBIENT_LIGHT_COLOR, 
     AMBIENT_LIGHT_INTENSITY 
 } from '../constants';
+import { Vector3 } from 'three';
 
 const states = {
     humanoid: {
@@ -45,7 +47,7 @@ const states = {
         leftLowerLeg: 0,
     }
 }
-
+window.dogState = states.dog;
 let leftDogArm;
 let rightDogArm;
 let leftDogLeg;
@@ -69,7 +71,7 @@ let renderer;
 
 function initialization(reactComponent) {
     
-
+    
     camera.up.set(0, 1, 0);
     camera.position.set(0, 7, 7);
     camera.lookAt(0, 0, 0);
@@ -78,9 +80,25 @@ function initialization(reactComponent) {
     const doggo = createDoggo();
     scene.add(doggo.rootGroup);
     
-    Object.entries(states.dog).forEach(pair => {
-        
-    });
+
+    const gui = new dat.GUI();
+    const dogFolder = gui.addFolder('Doggo');
+    dogFolder.add(states.dog, 'torso', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(states.dog, 'neck', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(states.dog, 'tail', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(states.dog, 'leftUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(states.dog, 'rightUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(states.dog, 'leftLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(states.dog, 'rightLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(states.dog, 'rightUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(states.dog, 'leftUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(states.dog, 'rightLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(states.dog, 'leftLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    gui.remember(states.dog);
+
+    doggo.update();
+
+
     
     const canvas = document.getElementById("canvas");
     renderer = new THREE.WebGLRenderer({ canvas });
@@ -402,6 +420,7 @@ function createDoggo() {
     return {
         rootGroup: dogGroup,
         
+        torso: dogGroup,
         neck: neckCylinder,
         tail: tailMesh,
         
@@ -415,7 +434,15 @@ function createDoggo() {
         rightLowerLeg: rightDogLeg.children[0],
 
         leftUpperLeg: leftDogLeg,
-        leftLowerLeg: leftDogLeg.children[0]
+        leftLowerLeg: leftDogLeg.children[0],
+
+        update() {
+            Object.entries(states.dog).forEach(pair => {
+                const key = pair[0];
+                const value = pair[1];
+                this[key].setRotationFromAxisAngle(new Vector3(0, 0, 1), value);
+            });
+        }
     }
 
 
@@ -431,5 +458,6 @@ function resizeRendererToDisplaySize(renderer) {
     }
     return needResize;
 }
+
 
 export default initialization;
