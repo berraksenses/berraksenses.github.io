@@ -1,6 +1,16 @@
 import * as THREE from 'three';
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+import { MtlObjBridge } from 'three/examples/jsm/loaders/obj2/bridge/MtlObjBridge.js';
+
 import Floor from './Models/Floor';
+import grass from './Models/10450_Rectangular_Grass_Patch_L3.123c827d110a-1347-4381-9208-e4f735762647/10450_Rectangular_Grass_Patch_v1_iterations-2.obj';
+import grassMaterial from './Models/10450_Rectangular_Grass_Patch_L3.123c827d110a-1347-4381-9208-e4f735762647/10450_Rectangular_Grass_Patch_v1_iterations-2.mtl';
+import imge from './Models/10450_Rectangular_Grass_Patch_L3.123c827d110a-1347-4381-9208-e4f735762647/10450_Rectangular_Grass_Patch_v1_Diffuse.jpeg';
+import house from './Models/Thai_house.obj';
+import houseTexture from './Models/download2.jpeg';
+
 import { 
     GLOBAL_LIGHT_COLOR, 
     GLOBAL_LIGHT_INTENSITY, 
@@ -62,12 +72,12 @@ const camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.inner
 
 const scene = new THREE.Scene();
 
-
 const humanGroup = new THREE.Object3D();
 const humanUpperGroup = new THREE.Object3D();
 let renderer;
 
-function initialization(reactComponent) {
+function initialization(reactComponent)
+{
     
 
     camera.up.set(0, 1, 0);
@@ -90,19 +100,90 @@ function initialization(reactComponent) {
     const controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 2, -1);
     controls.update();
-    scene.add(Floor());
+    //scene.add(Floor());
+
+       
+    {
+
+        const mtlLoader = new MTLLoader();
+        const objLoader = new OBJLoader2();
+
+        mtlLoader.load(grassMaterial, (mtlParseResult) => {
+            mtlParseResult.preload();
+            const materials = MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+            for (const material of Object.values(materials)) {
+                material.side = THREE.DoubleSide;
+            }
+            objLoader.addMaterials(materials);
+            objLoader.load(grass, (root) => {
+
+                var textureLoader = new THREE.TextureLoader();
+                var texture = textureLoader.load(imge);
+                root.traverse(function (child) {
+                    if (child.isMesh) child.material = new THREE.MeshBasicMaterial({
+                        //color:     0x996633,
+                        //specular:  0x050505,
+                        //shininess: my_shine_value,
+                        map: texture,
+                        //side:      THREE.DoubleSide
+                    });
+                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+
+                });
+
+                root.updateMatrixWorld();
+                scene.add(root);
+
+                root.rotateZ(Math.PI);
+                root.rotateX(Math.PI / 2);
+                root.position.set(0, -0.8, -4);
+                root.scale.set(0.15, 0.15, 0.08);
+
+            });
+        });
+
+        const houseObjLoader = new OBJLoader2();
+
+        houseObjLoader.load(house, (littleHouse) => {
+            var textureLoader = new THREE.TextureLoader();
+            var texture = textureLoader.load(houseTexture);
+            littleHouse.traverse(function (child) {
+                if (child.isMesh) child.material = new THREE.MeshPhongMaterial({
+                    //color: 0x996633,
+                    //specular: 0x050505,
+                    //shininess:1000,
+
+                    map: texture,
+                    side:      THREE.DoubleSide
+                });
+                //texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+            });
+            littleHouse.updateMatrixWorld();
+            scene.add(littleHouse);
+            littleHouse.rotateY(-2*Math.PI);
+            littleHouse.position.set(-10, -0.8, -20);
+            littleHouse.scale.set(1, 1, 0.5);
+        });
+
+
+
+
+    }
+
 
     {
-        const directionalLight = new THREE.DirectionalLight( GLOBAL_LIGHT_COLOR, GLOBAL_LIGHT_INTENSITY );
+        const directionalLight = new THREE.DirectionalLight(GLOBAL_LIGHT_COLOR, GLOBAL_LIGHT_INTENSITY);
         directionalLight.target.position.copy(GLOBAL_LIGHT_TARGET);
         directionalLight.position.copy(GLOBAL_LIGHT_POSITION);
 
         const light = new THREE.AmbientLight(AMBIENT_LIGHT_COLOR, AMBIENT_LIGHT_INTENSITY);
-        
-        scene.add( light );
-        scene.add( directionalLight );
-        scene.add( directionalLight.target );
-    }
+
+        scene.add(light);
+        scene.add(directionalLight);
+        scene.add(directionalLight.target);
+    }  
 
     const mainLoop = () => {
 
@@ -112,38 +193,38 @@ function initialization(reactComponent) {
             camera.updateProjectionMatrix();
         }
 
-        // if (time <= 30 && legForwardFlag) {
+         //if (time <= 30 && legForwardFlag) {
 
-        //     leftDogArm.rotateZ(-Math.PI / 180);
-        //     rightDogArm.rotateZ(+Math.PI / 180); 
-        //     rightDogLeg.rotateZ(-Math.PI / 180);
+         //    leftDogArm.rotateZ(-Math.PI / 180);
+         //    rightDogArm.rotateZ(+Math.PI / 180); 
+         //    rightDogLeg.rotateZ(-Math.PI / 180);
 
-        //     leftDogLeg.rotateZ(+Math.PI / 180);
+         //    leftDogLeg.rotateZ(+Math.PI / 180);
 
-        //     rightDogLeg.children[0].rotateZ(-Math.PI / 180);
-        //     leftDogLeg.children[0].rotateZ(+Math.PI / 180);
+         //    rightDogLeg.children[0].rotateZ(-Math.PI / 180);
+         //    leftDogLeg.children[0].rotateZ(+Math.PI / 180);
 
-        //     leftDogArm.children[0].rotateZ(-Math.PI / 180);
-        //     rightDogArm.children[0].rotateZ(+Math.PI / 180);
+         //    leftDogArm.children[0].rotateZ(-Math.PI / 180);
+         //    rightDogArm.children[0].rotateZ(+Math.PI / 180);
 
-        //    (time === 30) ? (legForwardFlag = false) : time += 1;
-        // }
-        // else {
-        //     leftDogArm.rotateZ(+Math.PI /180);                
-        //     rightDogArm.rotateZ(-Math.PI / 180);
+         //   (time === 30) ? (legForwardFlag = false) : time += 1;
+         //}
+         //else {
+         //    leftDogArm.rotateZ(+Math.PI /180);                
+         //    rightDogArm.rotateZ(-Math.PI / 180);
 
-        //     rightDogLeg.rotateZ(+Math.PI / 180); 
-        //     leftDogLeg.rotateZ(-Math.PI / 180);
+         //    rightDogLeg.rotateZ(+Math.PI / 180); 
+         //    leftDogLeg.rotateZ(-Math.PI / 180);
 
-        //     rightDogLeg.children[0].rotateZ(+Math.PI / 180);
-        //     leftDogLeg.children[0].rotateZ(-Math.PI / 180);
+         //    rightDogLeg.children[0].rotateZ(+Math.PI / 180);
+         //    leftDogLeg.children[0].rotateZ(-Math.PI / 180);
 
-        //     leftDogArm.children[0].rotateZ(+Math.PI / 180);
-        //     rightDogArm.children[0].rotateZ(-Math.PI / 180);
+         //    leftDogArm.children[0].rotateZ(+Math.PI / 180);
+         //    rightDogArm.children[0].rotateZ(-Math.PI / 180);
 
-        //     (time === 0) ? legForwardFlag = true : time -= 1;
+         //    (time === 0) ? legForwardFlag = true : time -= 1;
 
-        // }
+         //}
 
         renderer.render(scene, camera);
         // when canvas is removed from dom then stop the infinite loop
@@ -232,7 +313,7 @@ function createHumanoid() {
 
     const neckCylinder = new THREE.Mesh(neckCylinderGeometry, neckCylinderMaterial);
 
-    humanGroup.position.set(-2, 0, -4);
+    humanGroup.position.set(-2, 1.33, -4);
     torsoCylinder.add(neckCylinder);
 
     const sphereGeometry = new THREE.SphereBufferGeometry(
@@ -300,7 +381,7 @@ function createDoggo() {
     const noseMaterial = new THREE.MeshPhongMaterial({ color: 0xda2c43 });
     const nose = new THREE.Mesh(eyesGeometry, noseMaterial);
 
-    dogGroup.position.set(1, 1, -4);
+    dogGroup.position.set(1, 0.85, -4);
 
     const earGeometry = new THREE.BoxGeometry(0.08, 0.3, 0.2);
     const earMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
@@ -421,15 +502,16 @@ function createDoggo() {
 
 }
 
-function resizeRendererToDisplaySize(renderer) {
-    const canvas = renderer.domElement;
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
-    const needResize = canvas.width !== width || canvas.height !== height;
-    if (needResize) {
-      renderer.setSize(width, height, false);
+    function resizeRendererToDisplaySize(renderer) {
+        const canvas = renderer.domElement;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        const needResize = canvas.width !== width || canvas.height !== height;
+        if (needResize) {
+            renderer.setSize(width, height, false);
+        }
+        return needResize;
     }
-    return needResize;
-}
+
 
 export default initialization;
