@@ -1,0 +1,10 @@
+
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 22.04.2011 13:23:06
+
+
+newmtl 10450_Rectangular_Grass_Patch_v1
+
+   
+    illum 2
+    map_Kd ../10450_Rectangular_Grass_Patch_v1_Diffuse.jpeg
