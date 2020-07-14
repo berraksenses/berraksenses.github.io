@@ -4,13 +4,18 @@ import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { MtlObjBridge } from 'three/examples/jsm/loaders/obj2/bridge/MtlObjBridge.js';
 
-import Floor from './Models/Floor';
 import dat from 'dat.gui';
 import grass from './Models/10450_Rectangular_Grass_Patch_L3.123c827d110a-1347-4381-9208-e4f735762647/10450_Rectangular_Grass_Patch_v1_iterations-2.obj';
 import grassMaterial from './Models/10450_Rectangular_Grass_Patch_L3.123c827d110a-1347-4381-9208-e4f735762647/10450_Rectangular_Grass_Patch_v1_iterations-2.mtl';
 import imge from './Models/10450_Rectangular_Grass_Patch_L3.123c827d110a-1347-4381-9208-e4f735762647/10450_Rectangular_Grass_Patch_v1_Diffuse.jpeg';
 import house from './Models/Thai_house.obj';
 import houseTexture from './Models/download2.jpeg';
+import treeObj from './Models/tree2.obj';
+import bark from './Models/bark.png';
+import leaf from './Models/leaf.png';
+
+import fenceObj from './Models/Fence.obj';
+import cremeTexture from './Models/creme.jpg';
 
 import { 
     GLOBAL_LIGHT_COLOR, 
@@ -20,6 +25,7 @@ import {
     AMBIENT_LIGHT_COLOR, 
     AMBIENT_LIGHT_INTENSITY 
 } from '../constants';
+
 import { Vector3 } from 'three';
 
 const states = {
@@ -73,6 +79,8 @@ const far = 100000;
 const camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, near, far);
 
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xfffff1);
+
 
 const humanGroup = new THREE.Object3D();
 const humanUpperGroup = new THREE.Object3D();
@@ -83,7 +91,7 @@ function initialization(reactComponent)
     
     
     camera.up.set(0, 1, 0);
-    camera.position.set(0, 7, 7);
+    camera.position.set(-1, 3, 7);
     camera.lookAt(0, 0, 0);
 
     createHumanoid();
@@ -118,8 +126,6 @@ function initialization(reactComponent)
     const controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 2, -1);
     controls.update();
-    //scene.add(Floor());
-
        
     {
 
@@ -185,6 +191,76 @@ function initialization(reactComponent)
             littleHouse.scale.set(1, 1, 0.5);
         });
 
+        const treeObjLoader = new OBJLoader2();
+
+        treeObjLoader.load(treeObj, (tree) => {
+            var textureLoader = new THREE.TextureLoader();
+            var textureLeaf = textureLoader.load(leaf);
+            var textureBark = textureLoader.load(bark);
+            var texture;
+
+            tree.traverse(function (child) {
+                console.log(tree.children[1].name);
+                if (child.name == "tree tree_leaves") {
+                    texture = textureLeaf;
+                }
+                else {
+                    texture = textureBark;
+                }
+                
+                child.material = new THREE.MeshPhongMaterial({
+                    //color: 0x996633,
+                    //specular: 0x050505,
+                    //shininess:1000,
+
+                    map: texture,
+                    side: THREE.DoubleSide
+                });
+
+            });
+            tree.updateMatrixWorld();
+            scene.add(tree);
+            tree.position.set(10, -0.8, -20);
+            tree.scale.set(0.1, 0.1, 0.1);
+        });
+
+
+        const fenceObjLoader = new OBJLoader2();
+
+        fenceObjLoader.load(fenceObj, (fence) => {
+            var textureLoader = new THREE.TextureLoader();
+            var texture = textureLoader.load(cremeTexture);
+            fence.traverse(function (child) {
+                if (child.isMesh) child.material = new THREE.MeshPhongMaterial({
+                    //color: 0x996633,
+                    //specular: 0x050505,
+                    //shininess:1000,
+
+                    map: texture,
+                    side: THREE.DoubleSide
+                });
+                //texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+            });
+            fence.updateMatrixWorld();
+            scene.add(fence);
+
+            fence.scale.set(0.1, 0.15, 0.45);
+
+            fence.position.set(-22.9, -0.8, -33);
+            var rightFence = fence.clone(); // or any other coordinates
+
+            var topFence = fence.clone(); // or any other coordinates
+
+            topFence.rotateY(Math.PI / 2);
+            topFence.scale.set(0.2,0.15,0.48);
+            topFence.position.set(-31, -0.8, -25);
+
+            
+            rightFence.translateX(45);
+            scene.add(topFence);
+            scene.add(rightFence);
+        });
 
 
 
@@ -207,6 +283,7 @@ function initialization(reactComponent)
 
         if (resizeRendererToDisplaySize(renderer)) {
             const canvas = renderer.domElement;
+
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
         }
