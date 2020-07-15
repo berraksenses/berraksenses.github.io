@@ -434,7 +434,7 @@ function createHumanoid() {
     torsoCylinder.name = "torso"
 
     headMesh.translateY(0.27);
-    headMesh.rotateY(Math.PI/180 * 30);
+    //headMesh.rotateY(- Math.PI/180 * 60);
     neckCylinder.translateY(0.55);
 
     const leftArms = createArm(dogLegFlag);
