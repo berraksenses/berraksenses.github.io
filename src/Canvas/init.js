@@ -13,6 +13,10 @@ import houseTexture from './Models/download2.jpeg';
 import treeObj from './Models/tree2.obj';
 import bark from './Models/bark.png';
 import leaf from './Models/leaf.png';
+import headTexture from './Models/images.png';
+
+import skinTexture from './Models/skinTexture.jpg';
+import shirtTexture from './Models/shirt.jpg';
 
 import fenceObj from './Models/Fence.obj';
 import cremeTexture from './Models/creme.jpg';
@@ -396,6 +400,14 @@ function createLegs() {
 
 function createHumanoid() {
 
+    var textureLoader = new THREE.TextureLoader();
+    var headTexture2 = textureLoader.load(headTexture);
+
+
+    var skinTexture2 = textureLoader.load(skinTexture);
+
+    var shirtTex = textureLoader.load(shirtTexture);
+
     const dogLegFlag = false;
 
     const torsoCylinderGeometry = new THREE.CylinderGeometry(0.23, 0.23, 0.95, 0.35);
@@ -404,7 +416,7 @@ function createHumanoid() {
     const torsoCylinder = new THREE.Mesh(torsoCylinderGeometry, torsoCylinderMaterial);
 
     const neckCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.18, 0.05);
-    const neckCylinderMaterial = new THREE.MeshPhongMaterial({ color: 0xcf1f1f });
+    const neckCylinderMaterial = new THREE.MeshPhongMaterial({ color: 0xfedaab });
 
     const neckCylinder = new THREE.Mesh(neckCylinderGeometry, neckCylinderMaterial);
 
@@ -412,14 +424,17 @@ function createHumanoid() {
     torsoCylinder.add(neckCylinder);
 
     const sphereGeometry = new THREE.SphereBufferGeometry(
-        0.18, 20, 20);
+        0.28, 20, 20);
 
-    const headMaterial = new THREE.MeshPhongMaterial({ color: 0xFFFF00 });
+    const headMaterial = new THREE.MeshPhongMaterial({ color: 0xfedaab ,map: headTexture2 });
     const headMesh = new THREE.Mesh(sphereGeometry, headMaterial);
-    
+
+    headMesh.name = "head"
     neckCylinder.add(headMesh);
+    torsoCylinder.name = "torso"
 
     headMesh.translateY(0.27);
+    headMesh.rotateY(Math.PI/180 * 30);
     neckCylinder.translateY(0.55);
 
     const leftArms = createArm(dogLegFlag);
@@ -442,7 +457,7 @@ function createHumanoid() {
 
     torsoCylinder.add(rightArms);
     torsoCylinder.add(leftArms);
-    
+
     humanUpperGroup.add(torsoCylinder);
     humanUpperGroup.add(leftLegs);
     humanUpperGroup.add(rightLegs);
@@ -450,13 +465,37 @@ function createHumanoid() {
     //humanUpperGroup.rotateZ(radians); //when the human will get the stick from the ground he will use this to lay down 
     humanGroup.add(humanUpperGroup);
 
-   
+    humanGroup.traverse(function (child) {
+        if (child.name == "torso") {
+
+            child.material = new THREE.MeshPhongMaterial({
+
+
+                map: shirtTex,
+                side: THREE.DoubleSide
+            });
+
+        }
+        else if (child.name != "head") child.material = new THREE.MeshPhongMaterial({
+
+
+            map: skinTexture2,
+            side: THREE.DoubleSide
+        });
+
+       
+
+        //texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        console.log(child.name);
+
+    });
+
+
     //humanGroup.scale.set(1,1,1.2); 
     scene.add(humanGroup);
-
 }
 
-
+        
 /**
  * 
  */
