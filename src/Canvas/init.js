@@ -14,6 +14,8 @@ import treeObj from './Models/tree2.obj';
 import bark from './Models/bark.png';
 import leaf from './Models/leaf.png';
 import headTexture from './Models/images.png';
+import TWEEN from '@tweenjs/tween.js';
+
 
 import skinTexture from './Models/skinTexture.jpg';
 import shirtTexture from './Models/shirt.jpg';
@@ -30,7 +32,49 @@ import {
     AMBIENT_LIGHT_INTENSITY 
 } from '../constants';
 
+import {
+    INITIAL_STATE as DOGGO_INITIAL_STATE,
+    WALKING_1 as DOGGO_WALKING_1,
+    WALKING_2 as DOGGO_WALKING_2,
+} from './KeyFrames/doggo';
+
 import { Vector3 } from 'three';
+
+const initialState  = {
+    humanoid: {
+        torso: 0,
+        neck: 0,
+        
+        leftUpperArm: 0,
+        rightUpperArm: 0,
+        
+        leftLowerArm: 0,
+        rightLowerArm: 0,
+
+        rightUpperLeg: 0,
+        leftUpperLeg: 0,
+
+        rightLowerLeg: 0,
+        leftLowerLeg: 0,
+    },
+    dog: {
+        torso: 0,
+        neck: 0,
+        tail: 0,
+        
+        leftUpperArm: 0,
+        rightUpperArm: 0,
+        
+        leftLowerArm: 0,
+        rightLowerArm: 0,
+
+        rightUpperLeg: 0,
+        leftUpperLeg: 0,
+
+        rightLowerLeg: 0,
+        leftLowerLeg: 0,
+    }
+}
 
 const states = {
     humanoid: {
@@ -73,8 +117,7 @@ let rightDogArm;
 let leftDogLeg;
 let rightDogLeg;
 let dogGroup;
-let time = 0;
-let legForwardFlag = true;
+
 
 
 const fov = 45;
@@ -101,8 +144,14 @@ function initialization(reactComponent)
     createHumanoid();
     const doggo = createDoggo();
     scene.add(doggo.rootGroup);
+
+    const canvas = document.getElementById("canvas");
+    renderer = new THREE.WebGLRenderer({ canvas });
+
+    renderer.render(scene, camera);
     
 
+    const guiLogging = { logInTheConsole: () => console.log(states.dog) };
     const gui = new dat.GUI();
     const dogFolder = gui.addFolder('Doggo');
     dogFolder.add(states.dog, 'torso', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
@@ -116,16 +165,18 @@ function initialization(reactComponent)
     dogFolder.add(states.dog, 'leftUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
     dogFolder.add(states.dog, 'rightLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
     dogFolder.add(states.dog, 'leftLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(guiLogging, 'logInTheConsole');
     gui.remember(states.dog);
-
+    
     doggo.update();
 
 
-    
-    const canvas = document.getElementById("canvas");
-    renderer = new THREE.WebGLRenderer({ canvas });
 
-    renderer.render(scene, camera);
+    
+    const animDoggoWalking_1 = new TWEEN.Tween(states.dog).to(DOGGO_WALKING_1, 500).start().onUpdate(() => doggo.update());
+    const animDoggoWalking_2 = new TWEEN.Tween(states.dog).to(DOGGO_WALKING_2, 500).repeat(Infinity).yoyo(true).onUpdate(() => doggo.update());
+    animDoggoWalking_1.chain(animDoggoWalking_2);
+
 
     const controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 2, -1);
@@ -205,7 +256,7 @@ function initialization(reactComponent)
 
             tree.traverse(function (child) {
                 console.log(tree.children[1].name);
-                if (child.name == "tree tree_leaves") {
+                if (child.name === "tree tree_leaves") {
                     texture = textureLeaf;
                 }
                 else {
@@ -284,7 +335,7 @@ function initialization(reactComponent)
     }  
 
     const mainLoop = () => {
-
+        TWEEN.update();
         if (resizeRendererToDisplaySize(renderer)) {
             const canvas = renderer.domElement;
 
@@ -292,38 +343,7 @@ function initialization(reactComponent)
             camera.updateProjectionMatrix();
         }
 
-         //if (time <= 30 && legForwardFlag) {
-
-         //    leftDogArm.rotateZ(-Math.PI / 180);
-         //    rightDogArm.rotateZ(+Math.PI / 180); 
-         //    rightDogLeg.rotateZ(-Math.PI / 180);
-
-         //    leftDogLeg.rotateZ(+Math.PI / 180);
-
-         //    rightDogLeg.children[0].rotateZ(-Math.PI / 180);
-         //    leftDogLeg.children[0].rotateZ(+Math.PI / 180);
-
-         //    leftDogArm.children[0].rotateZ(-Math.PI / 180);
-         //    rightDogArm.children[0].rotateZ(+Math.PI / 180);
-
-         //   (time === 30) ? (legForwardFlag = false) : time += 1;
-         //}
-         //else {
-         //    leftDogArm.rotateZ(+Math.PI /180);                
-         //    rightDogArm.rotateZ(-Math.PI / 180);
-
-         //    rightDogLeg.rotateZ(+Math.PI / 180); 
-         //    leftDogLeg.rotateZ(-Math.PI / 180);
-
-         //    rightDogLeg.children[0].rotateZ(+Math.PI / 180);
-         //    leftDogLeg.children[0].rotateZ(-Math.PI / 180);
-
-         //    leftDogArm.children[0].rotateZ(+Math.PI / 180);
-         //    rightDogArm.children[0].rotateZ(-Math.PI / 180);
-
-         //    (time === 0) ? legForwardFlag = true : time -= 1;
-
-         //}
+        
 
         renderer.render(scene, camera);
         // when canvas is removed from dom then stop the infinite loop
@@ -466,7 +486,7 @@ function createHumanoid() {
     humanGroup.add(humanUpperGroup);
 
     humanGroup.traverse(function (child) {
-        if (child.name == "torso") {
+        if (child.name === "torso") {
 
             child.material = new THREE.MeshPhongMaterial({
 
@@ -476,7 +496,7 @@ function createHumanoid() {
             });
 
         }
-        else if (child.name != "head") child.material = new THREE.MeshPhongMaterial({
+        else if (child.name !== "head") child.material = new THREE.MeshPhongMaterial({
 
 
             map: skinTexture2,
