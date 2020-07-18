@@ -15,6 +15,7 @@ import bark from './Models/bark.png';
 import leaf from './Models/leaf.png';
 import headTexture from './Models/images.png';
 import TWEEN from '@tweenjs/tween.js';
+import Doggo from './Models/Doggo';
 
 
 import skinTexture from './Models/skinTexture.jpg';
@@ -23,13 +24,13 @@ import shirtTexture from './Models/shirt.jpg';
 import fenceObj from './Models/Fence.obj';
 import cremeTexture from './Models/creme.jpg';
 
-import { 
-    GLOBAL_LIGHT_COLOR, 
-    GLOBAL_LIGHT_INTENSITY, 
-    GLOBAL_LIGHT_TARGET, 
-    GLOBAL_LIGHT_POSITION, 
-    AMBIENT_LIGHT_COLOR, 
-    AMBIENT_LIGHT_INTENSITY 
+import {
+    GLOBAL_LIGHT_COLOR,
+    GLOBAL_LIGHT_INTENSITY,
+    GLOBAL_LIGHT_TARGET,
+    GLOBAL_LIGHT_POSITION,
+    AMBIENT_LIGHT_COLOR,
+    AMBIENT_LIGHT_INTENSITY
 } from '../constants';
 
 import {
@@ -38,16 +39,16 @@ import {
     WALKING_2 as DOGGO_WALKING_2,
 } from './KeyFrames/doggo';
 
-import { Vector3 } from 'three';
 
-const initialState  = {
+
+const initialState = {
     humanoid: {
         torso: 0,
         neck: 0,
-        
+
         leftUpperArm: 0,
         rightUpperArm: 0,
-        
+
         leftLowerArm: 0,
         rightLowerArm: 0,
 
@@ -61,10 +62,10 @@ const initialState  = {
         torso: 0,
         neck: 0,
         tail: 0,
-        
+
         leftUpperArm: 0,
         rightUpperArm: 0,
-        
+
         leftLowerArm: 0,
         rightLowerArm: 0,
 
@@ -80,10 +81,10 @@ const states = {
     humanoid: {
         torso: 0,
         neck: 0,
-        
+
         leftUpperArm: 0,
         rightUpperArm: 0,
-        
+
         leftLowerArm: 0,
         rightLowerArm: 0,
 
@@ -97,10 +98,10 @@ const states = {
         torso: 0,
         neck: 0,
         tail: 0,
-        
+
         leftUpperArm: 0,
         rightUpperArm: 0,
-        
+
         leftLowerArm: 0,
         rightLowerArm: 0,
 
@@ -111,13 +112,7 @@ const states = {
         leftLowerLeg: 0,
     }
 }
-window.dogState = states.dog;
-let leftDogArm;
-let rightDogArm;
-let leftDogLeg;
-let rightDogLeg;
-let dogGroup;
-
+// window.dogState = states.dog;
 
 
 const fov = 45;
@@ -133,55 +128,48 @@ const humanGroup = new THREE.Object3D();
 const humanUpperGroup = new THREE.Object3D();
 let renderer;
 
-function initialization(reactComponent)
-{
-    
-    
+function initialization(reactComponent) {
+
+
     camera.up.set(0, 1, 0);
     camera.position.set(-1, 3, 7);
     camera.lookAt(0, 0, 0);
 
     createHumanoid();
-    const doggo = createDoggo();
+    const doggo = new Doggo();
     scene.add(doggo.rootGroup);
 
     const canvas = document.getElementById("canvas");
     renderer = new THREE.WebGLRenderer({ canvas });
 
     renderer.render(scene, camera);
-    
 
-    const guiLogging = { logInTheConsole: () => console.log(states.dog) };
+
+    const guiLogging = { logInTheConsole: () => console.log(doggo.state) };
     const gui = new dat.GUI();
     const dogFolder = gui.addFolder('Doggo');
-    dogFolder.add(states.dog, 'torso', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(states.dog, 'neck', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(states.dog, 'tail', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(states.dog, 'leftUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(states.dog, 'rightUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(states.dog, 'leftLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(states.dog, 'rightLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(states.dog, 'rightUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(states.dog, 'leftUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(states.dog, 'rightLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(states.dog, 'leftLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(doggo.state, 'torso', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(doggo.state, 'neck', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(doggo.state, 'tail', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(doggo.state, 'leftUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(doggo.state, 'rightUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(doggo.state, 'leftLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(doggo.state, 'rightLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(doggo.state, 'rightUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(doggo.state, 'leftUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(doggo.state, 'rightLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+    dogFolder.add(doggo.state, 'leftLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
     dogFolder.add(guiLogging, 'logInTheConsole');
-    gui.remember(states.dog);
-    
+    gui.remember(doggo.state);
+
     doggo.update();
 
-
-
-    
-    const animDoggoWalking_1 = new TWEEN.Tween(states.dog).to(DOGGO_WALKING_1, 500).start().onUpdate(() => doggo.update());
-    const animDoggoWalking_2 = new TWEEN.Tween(states.dog).to(DOGGO_WALKING_2, 500).repeat(Infinity).yoyo(true).onUpdate(() => doggo.update());
-    animDoggoWalking_1.chain(animDoggoWalking_2);
-
+    doggo.startWalking();
 
     const controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 2, -1);
     controls.update();
-       
+
     {
 
         const mtlLoader = new MTLLoader();
@@ -234,14 +222,14 @@ function initialization(reactComponent)
                     //shininess:1000,
 
                     map: texture,
-                    side:      THREE.DoubleSide
+                    side: THREE.DoubleSide
                 });
                 //texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 
             });
             littleHouse.updateMatrixWorld();
             scene.add(littleHouse);
-            littleHouse.rotateY(-2*Math.PI);
+            littleHouse.rotateY(-2 * Math.PI);
             littleHouse.position.set(-10, -0.8, -20);
             littleHouse.scale.set(1, 1, 0.5);
         });
@@ -262,7 +250,7 @@ function initialization(reactComponent)
                 else {
                     texture = textureBark;
                 }
-                
+
                 child.material = new THREE.MeshPhongMaterial({
                     //color: 0x996633,
                     //specular: 0x050505,
@@ -308,10 +296,10 @@ function initialization(reactComponent)
             var topFence = fence.clone(); // or any other coordinates
 
             topFence.rotateY(Math.PI / 2);
-            topFence.scale.set(0.2,0.15,0.48);
+            topFence.scale.set(0.2, 0.15, 0.48);
             topFence.position.set(-31, -0.8, -25);
 
-            
+
             rightFence.translateX(45);
             scene.add(topFence);
             scene.add(rightFence);
@@ -332,7 +320,7 @@ function initialization(reactComponent)
         scene.add(light);
         scene.add(directionalLight);
         scene.add(directionalLight.target);
-    }  
+    }
 
     const mainLoop = () => {
         TWEEN.update();
@@ -343,7 +331,7 @@ function initialization(reactComponent)
             camera.updateProjectionMatrix();
         }
 
-        
+
 
         renderer.render(scene, camera);
         // when canvas is removed from dom then stop the infinite loop
@@ -373,19 +361,19 @@ function createArm(dogLegFlag) {
     //    lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial);
 
     //} else {
-        const armMaterial2 = new THREE.MeshPhongMaterial({ color: 0xcfffff });
+    const armMaterial2 = new THREE.MeshPhongMaterial({ color: 0xcfffff });
 
-        armMaterial = new THREE.MeshPhongMaterial({ color: 0xD2691E });
-        upperArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
-        upperArmCylinder = new THREE.Mesh(upperArmCylinderGeometry, armMaterial);
+    armMaterial = new THREE.MeshPhongMaterial({ color: 0xD2691E });
+    upperArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
+    upperArmCylinder = new THREE.Mesh(upperArmCylinderGeometry, armMaterial);
 
-        lowerArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
-        lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial2);
+    lowerArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
+    lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial2);
 
-    
+
     upperArmCylinder.add(lowerArmCylinder);
     lowerArmCylinder.translateY(-0.35);
- 
+
     //lowerArmCylinder.rotateZ(Math.PI);
 
     return upperArmCylinder;
@@ -446,7 +434,7 @@ function createHumanoid() {
     const sphereGeometry = new THREE.SphereBufferGeometry(
         0.28, 20, 20);
 
-    const headMaterial = new THREE.MeshPhongMaterial({ color: 0xfedaab ,map: headTexture2 });
+    const headMaterial = new THREE.MeshPhongMaterial({ color: 0xfedaab, map: headTexture2 });
     const headMesh = new THREE.Mesh(sphereGeometry, headMaterial);
 
     headMesh.name = "head"
@@ -503,7 +491,7 @@ function createHumanoid() {
             side: THREE.DoubleSide
         });
 
-       
+
 
         //texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
         console.log(child.name);
@@ -515,166 +503,18 @@ function createHumanoid() {
     scene.add(humanGroup);
 }
 
-        
-/**
- * 
- */
-function createDoggo() {
 
-    dogGroup = new THREE.Object3D();
-    const dogLegFlag = true;
-
-
-    const eyesGeometry = new THREE.SphereBufferGeometry(
-        0.045, 50, 50);
-    const eyesMaterial = new THREE.MeshPhongMaterial({ color: 0xdad9ff});
-
-    const eye1 = new THREE.Mesh(eyesGeometry, eyesMaterial);
-    const eye2 = new THREE.Mesh(eyesGeometry, eyesMaterial);
-
-    const noseMaterial = new THREE.MeshPhongMaterial({ color: 0xda2c43 });
-    const nose = new THREE.Mesh(eyesGeometry, noseMaterial);
-
-    dogGroup.position.set(1, 0.85, -4);
-
-    const earGeometry = new THREE.BoxGeometry(0.08, 0.3, 0.2);
-    const earMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
-    const ear1 = new THREE.Mesh(earGeometry, earMaterial);
-    const ear2 = new THREE.Mesh(earGeometry, earMaterial);
-
-    ear1.translateZ(0.2);
-    ear2.translateZ(-0.2);
-                
-
-    const neckCylinderGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.05, 0.05);
-    const neckCylinderMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
-
-    const neckCylinder = new THREE.Mesh(neckCylinderGeometry, neckCylinderMaterial);
-
-    const tailCylinderGeometry = new THREE.CylinderGeometry(0.23, .05, 0.05, 0.06);
-
-    const sphereGeometry = new THREE.SphereBufferGeometry(0.25, 20, 40);
-    const sphereGeometryTorso = sphereGeometry.scale(2.5, 1, 1);
-
-    const torsoMaterial = new THREE.MeshPhongMaterial({ color: 0xD2691E });
-    const torsoMesh = new THREE.Mesh(sphereGeometryTorso, torsoMaterial);
-
-    const headGeometry = new THREE.SphereBufferGeometry(0.25, 20, 20);
-    const headMesh = new THREE.Mesh(headGeometry, torsoMaterial);
-
-    leftDogLeg = createArm(dogLegFlag);
-    leftDogArm = createArm(dogLegFlag);
-
-    rightDogLeg = createArm(dogLegFlag);
-    rightDogArm = createArm(dogLegFlag);
-
-    const tailMesh = new THREE.Mesh(tailCylinderGeometry, torsoMaterial);
-    tailMesh.rotateZ(Math.PI / 7);
-
-    tailMesh.translateX(0.7);
-    tailMesh.translateY(-0.1);
-
-    headMesh.add(eye1);
-    headMesh.add(eye2);
-    headMesh.add(ear1);
-    headMesh.add(ear2);
-    headMesh.add(nose);
-
-    nose.translateX(-0.24);
-    nose.translateY(-0.05);
-    eye1.translateZ(0.15);
-    eye1.translateY(0.05)
-    eye1.translateX(-0.2);
-
-    eye2.translateZ(-0.15);
-    eye2.translateY(0.05);
-    eye2.translateX(-0.2);
-
-
-    neckCylinder.translateX(-0.5);
-    neckCylinder.translateY(0.2);
-    headMesh.translateY(0.3);
-    headMesh.rotateZ(-Math.PI / 7); //due to neck, also the head is rotated. with this it is reversed.
-    neckCylinder.rotateZ(Math.PI / 7);
-
-    rightDogArm.translateX(0.3);
-    rightDogArm.translateY(-0.3);
-    rightDogArm.translateZ(0.2);
-
-
-    leftDogArm.translateX(0.3);
-    leftDogArm.translateY(-0.3);
-    //leftDogArm.translateZ(-0.2);
-
-
-    rightDogLeg.translateX(-0.3);
-    rightDogLeg.translateY(-0.3);
-    rightDogLeg.translateZ(0.2);
-
-
-    leftDogLeg.translateX(-0.3);
-    leftDogLeg.translateY(-0.3);
-    leftDogLeg.translateZ(-0.2);
-
-
-
-    //leftDogArm.children[0].rotateZ(Math.PI);
-
-
-
-    torsoMesh.add(leftDogArm);
-    torsoMesh.add(leftDogLeg);
-    torsoMesh.add(rightDogArm);
-    torsoMesh.add(rightDogLeg);
-
-    torsoMesh.add(tailMesh);
-    torsoMesh.add(neckCylinder);
-    neckCylinder.add(headMesh);
-
-    dogGroup.add(torsoMesh);
-    //scene.add(dogGroup);
-    
-    return {
-        rootGroup: dogGroup,
-        
-        torso: dogGroup,
-        neck: neckCylinder,
-        tail: tailMesh,
-        
-        rightUpperArm: rightDogArm,
-        rightLowerArm: rightDogArm.children[0],
-
-        leftUpperArm: leftDogArm,
-        leftLowerArm: leftDogArm.children[0],
-
-        rightUpperLeg: rightDogLeg,
-        rightLowerLeg: rightDogLeg.children[0],
-
-        leftUpperLeg: leftDogLeg,
-        leftLowerLeg: leftDogLeg.children[0],
-
-        update() {
-            Object.entries(states.dog).forEach(pair => {
-                const key = pair[0];
-                const value = pair[1];
-                this[key].setRotationFromAxisAngle(new Vector3(0, 0, 1), value);
-            });
-        }
+function resizeRendererToDisplaySize(renderer) {
+    const canvas = renderer.domElement;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    const needResize = canvas.width !== width || canvas.height !== height;
+    if (needResize) {
+        renderer.setSize(width, height, false);
     }
-
-
+    return needResize;
 }
 
-    function resizeRendererToDisplaySize(renderer) {
-        const canvas = renderer.domElement;
-        const width = canvas.clientWidth;
-        const height = canvas.clientHeight;
-        const needResize = canvas.width !== width || canvas.height !== height;
-        if (needResize) {
-            renderer.setSize(width, height, false);
-        }
-        return needResize;
-    }
 
 
 export default initialization;
