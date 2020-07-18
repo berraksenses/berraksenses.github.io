@@ -162,7 +162,8 @@ class Doggo {
         this.animDoggoWalking_1 = new TWEEN.Tween(this.state).to(DOGGO_WALKING_1, 500).onUpdate(() => this.update());
         this.animDoggoWalking_2 = new TWEEN.Tween(this.state).to(DOGGO_WALKING_2, 500).repeat(Infinity).yoyo(true).onUpdate(() => this.update());
 
-
+        const axesHelper = new THREE.AxesHelper( 5 );
+        this.dogGroup.add( axesHelper );
         //scene.add(dogGroup);
 
     }
@@ -205,12 +206,16 @@ class Doggo {
         this.dogGroup.getWorldDirection(direction);
         const destinationDirection = new Vector3();
         
-        destinationDirection.subVectors(destination, this.dogGroup.position);
-
+        destinationDirection.subVectors(destination, this.dogGroup.position).normalize();
+        console.log(destinationDirection);
+        console.log(direction);
+        const destinationDirectionObj = {x: destinationDirection.x, z: destinationDirection.z};
+        
         const rotation = new TWEEN.Tween(direction)
-            .to(destinationDirection, 1000)
+            .to(destinationDirectionObj, 1000)
             .onUpdate(() => this.dogGroup.lookAt(direction))
             .onComplete(() => {
+                console.log(direction);
                 this.startWalking();
                 new TWEEN.Tween(this.dogGroup.position)
                     .to({x, z}, time)
@@ -221,8 +226,12 @@ class Doggo {
         rotation.start();
     }
 
-    takeBall() {
+    takeTheBall() {
         console.error("Not Implemented");
+    }
+
+    putTheBall() {
+        
     }
 }
 
