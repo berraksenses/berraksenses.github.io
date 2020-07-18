@@ -145,7 +145,14 @@ function initialization(reactComponent) {
     renderer.render(scene, camera);
 
 
-    const guiLogging = { logInTheConsole: () => console.log(doggo.state) };
+    const guiButtons = { 
+        logInTheConsole: () => {console.log(doggo.state)},
+        startWalking: () => doggo.startWalking(),
+        stopWalking: () => doggo.stopWalking(),
+        move: () => doggo.moveTo(10, 10),
+        takeBall: () => doggo.takeBall(),
+        
+     };
     const gui = new dat.GUI();
     const dogFolder = gui.addFolder('Doggo');
     dogFolder.add(doggo.state, 'torso', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
@@ -159,12 +166,16 @@ function initialization(reactComponent) {
     dogFolder.add(doggo.state, 'leftUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
     dogFolder.add(doggo.state, 'rightLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
     dogFolder.add(doggo.state, 'leftLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(guiLogging, 'logInTheConsole');
+    dogFolder.add(guiButtons, 'logInTheConsole');
+    dogFolder.add(guiButtons, 'startWalking');
+    dogFolder.add(guiButtons, 'stopWalking');
+    dogFolder.add(guiButtons, 'move');
+    dogFolder.add(guiButtons, 'takeBall');
+
+    
     gui.remember(doggo.state);
 
     doggo.update();
-
-    doggo.startWalking();
 
     const controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 2, -1);
