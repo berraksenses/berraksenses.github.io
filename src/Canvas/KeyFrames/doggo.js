@@ -26,7 +26,7 @@ export const WALKING_1 = {
     rightLowerLeg: 0,
     rightUpperArm: -0.6832138426383452,
     rightUpperLeg: -0.6832138426383452,
-    tail: 0,
+    tail: 0.4,
     torso: 0
 }
 
@@ -40,6 +40,6 @@ export const WALKING_2 = {
     rightLowerLeg: 0,
     rightUpperArm: 0.6832138426383452,
     rightUpperLeg: 0.6832138426383452,
-    tail: 0,
+    tail: -0.4,
     torso: 0
 }

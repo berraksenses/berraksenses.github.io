@@ -42,7 +42,7 @@ class Doggo {
 
         const neckCylinder = new THREE.Mesh(neckCylinderGeometry, neckCylinderMaterial);
 
-        const tailCylinderGeometry = new THREE.CylinderGeometry(0.23, .05, 0.05, 0.06);
+        const tailCylinderGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.25, 0.15);
 
         const sphereGeometry = new THREE.SphereBufferGeometry(0.25, 20, 40);
         const sphereGeometryTorso = sphereGeometry.scale(2.5, 1, 1);
@@ -60,10 +60,11 @@ class Doggo {
         const rightDogArm = createArm();
 
         const tailMesh = new THREE.Mesh(tailCylinderGeometry, torsoMaterial);
-        tailMesh.rotateZ(Math.PI / 7);
-
-        tailMesh.translateX(0.7);
-        tailMesh.translateY(-0.1);
+        //tailMesh.translateY(-Math.PI / 2);
+        
+        tailMesh.translateX(0.6);
+        tailMesh.translateY(0.2);
+        tailMesh.rotateZ(Math.PI);
 
         headMesh.add(eye1);
         headMesh.add(eye2);
@@ -171,7 +172,11 @@ class Doggo {
         Object.entries(this.state).forEach(pair => {
             const key = pair[0];
             const value = pair[1];
-            this[key].setRotationFromAxisAngle(new Vector3(0, 0, 1), value);
+            if (key == "tail") {
+                this[key].setRotationFromAxisAngle(new Vector3(1, 0, 0), value);
+            }
+
+            else { this[key].setRotationFromAxisAngle(new Vector3(0, 0, 1), value); }
         });
     }
 
@@ -195,7 +200,7 @@ class Doggo {
         this.setState({ ...DOGGO_INITIAL_STATE });
     }
 
-    moveTo(x, z) {
+    moveTo(x,z) {
         console.log("start movement");
         const destination = new Vector3(x, Y_COORD, z);
         const distance = destination.distanceTo(this.dogGroup.position);
@@ -213,7 +218,7 @@ class Doggo {
             .onComplete(() => {
                 this.startWalking();
                 new TWEEN.Tween(this.dogGroup.position)
-                    .to({x, z}, time)
+                    .to({ x, z }, time)
                     .start()
                     .onComplete(() => this.stopWalking());
             })
