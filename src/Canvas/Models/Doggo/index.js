@@ -108,11 +108,7 @@ class Doggo {
         leftDogLeg.translateY(-0.3);
         leftDogLeg.translateZ(-0.2);
 
-
-
         //leftDogArm.children[0].rotateZ(Math.PI);
-
-
 
         torsoMesh.add(leftDogArm);
         torsoMesh.add(leftDogLeg);
@@ -176,8 +172,10 @@ class Doggo {
             if (key == "tail") {
                 this[key].setRotationFromAxisAngle(new Vector3(1, 0, 0), value);
             }
-
+  
             else { this[key].setRotationFromAxisAngle(new Vector3(0, 0, 1), value); }
+
+
         });
     }
 
@@ -187,6 +185,7 @@ class Doggo {
     }
 
     startWalking() {
+
     
         this.animDoggoWalking_1 = new TWEEN.Tween(this.state).to(DOGGO_WALKING_1, 500).onUpdate(() => this.update());
         this.animDoggoWalking_2 = new TWEEN.Tween(this.state).to(DOGGO_WALKING_2, 500).repeat(Infinity).yoyo(true).onUpdate(() => this.update());
@@ -265,12 +264,25 @@ function createArm() {
     upperArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
     upperArmCylinder = new THREE.Mesh(upperArmCylinderGeometry, armMaterial);
 
+    var pivot = new THREE.Object3D();
+    //pivot.translateY(0.25, 0); // MOVE THE PIVOT BACK TO WORLD ORIGN
+    //upperArmCylinder.add(pivot); // THIS ADDS THE PIVOT TO THE CENTRE OF THE GEOMOETRY, WHICH WAS THEN ADDING MESH2 IN THE WRONG PLACE
+
     lowerArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
     lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial2);
 
+    
 
-    upperArmCylinder.add(lowerArmCylinder);
-    lowerArmCylinder.translateY(-0.35);
+
+    var pivot = new THREE.Group();
+    pivot.translateY(-0.20);
+    lowerArmCylinder.translateY(-0.15);
+
+    upperArmCylinder.add(pivot);
+    pivot.add(lowerArmCylinder);
+    
+
+    //lowerArmCylinder.translateY(-0.35);
 
     //lowerArmCylinder.rotateZ(Math.PI);
 
