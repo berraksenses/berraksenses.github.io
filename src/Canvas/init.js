@@ -38,6 +38,7 @@ import {
     WALKING_1 as DOGGO_WALKING_1,
     WALKING_2 as DOGGO_WALKING_2,
 } from './KeyFrames/doggo';
+import { Vector3 } from 'three';
 
 
 
@@ -180,6 +181,9 @@ function initialization(reactComponent) {
     const controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 2, -1);
     controls.update();
+
+    const axesHelper = new THREE.AxesHelper( 5 );
+    scene.add( axesHelper );
 
     {
 
