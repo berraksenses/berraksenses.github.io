@@ -137,21 +137,21 @@ function initialization(reactComponent) {
     camera.lookAt(0, 0, 0);
 
     createHumanoid();
-    const doggo = new Doggo();
-    scene.add(doggo.rootGroup);
+
+    //scene.add(doggo.rootGroup);
 
     const canvas = document.getElementById("canvas");
     renderer = new THREE.WebGLRenderer({ canvas });
 
     renderer.render(scene, camera);
 
-
+    const doggo = new Doggo(scene);
     const guiButtons = { 
         logInTheConsole: () => {console.log(doggo.state)},
         startWalking: () => doggo.startWalking(),
         stopWalking: () => doggo.stopWalking(),
-        move: () => doggo.moveTo(10, 10),
-        takeBall: () => doggo.takeBall(),
+        move: () => doggo.moveTo(0, 10),
+        takeBall: () => doggo.takeTheBall(),
         
      };
     const gui = new dat.GUI();
@@ -176,7 +176,7 @@ function initialization(reactComponent) {
     
     gui.remember(doggo.state);
 
-    doggo.update();
+    //doggo.update();
 
     const controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 2, -1);
@@ -509,7 +509,7 @@ function createHumanoid() {
 
 
         //texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-        console.log(child.name);
+    
 
     });
 

@@ -10,9 +10,9 @@ const Y_COORD = 0.85;
 const SPEED = 5; // meters per second
 
 class Doggo {
-    
-    constructor() {
-        
+
+    constructor(parent) {
+
         this.dogGroup = new THREE.Object3D();
         this.rootGroup = this.dogGroup;
 
@@ -61,7 +61,7 @@ class Doggo {
 
         const tailMesh = new THREE.Mesh(tailCylinderGeometry, torsoMaterial);
         //tailMesh.translateY(-Math.PI / 2);
-        
+
         tailMesh.translateX(0.6);
         tailMesh.translateY(0.2);
         tailMesh.rotateZ(Math.PI);
@@ -116,10 +116,15 @@ class Doggo {
         torsoMesh.add(neckCylinder);
         neckCylinder.add(headMesh);
 
+
+
         this.dogGroup.add(torsoMesh);
-        
+        //this.dogGroup.rotateY(Math.PI / 2);
+
+
+
         this.torso = torsoMesh;
-        
+
         this.neck = neckCylinder;
         this.tail = tailMesh;
 
@@ -134,7 +139,23 @@ class Doggo {
 
         this.leftUpperLeg = leftDogLeg;
         this.leftLowerLeg = leftDogLeg.children[0];
+        // this.prevState = {
+        //     torso: 0,
+        //     neck: 0,
+        //     tail: 0,
 
+        //     leftUpperArm: 0,
+        //     rightUpperArm: 0,
+
+        //     leftLowerArm: 0,
+        //     rightLowerArm: 0,
+
+        //     rightUpperLeg: 0,
+        //     leftUpperLeg: 0,
+
+        //     rightLowerLeg: 0,
+        //     leftLowerLeg: 0,
+        // };
         this.state = {
             torso: 0,
             neck: 0,
@@ -153,27 +174,45 @@ class Doggo {
             leftLowerLeg: 0,
         };
 
+
         this.animDoggoWalking_1 = new TWEEN.Tween(this.state).to(DOGGO_WALKING_1, 500).onUpdate(() => this.update());
         this.animDoggoWalking_2 = new TWEEN.Tween(this.state).to(DOGGO_WALKING_2, 500).repeat(Infinity).yoyo(true).onUpdate(() => this.update());
 
-        const axesHelper = new THREE.AxesHelper( 5 );
-        this.dogGroup.add( axesHelper );
-        //scene.add(dogGroup);
+        const axesHelper = new THREE.AxesHelper(5);
+        this.dogGroup.add(axesHelper);
+
+        parent.add(this.dogGroup);
+        this.torso.rotateY(Math.PI / 2);
 
     }
 
     update() {
+
+        // const difference = {};
+        // Object.entries(this.state).forEach(([k, v]) => {
+        //     const diff = v - this.prevState[k];
+        //     if (diff !== 0) difference[k] = diff;
+        // });
+
+        // Object.entries(difference).forEach( ([k, v]) => {
+        //     if (k === 'tail') this[k].rotateX(v);
+        //     else this[k].rotateZ(v);
+        // });
+        // this.prevState = { ...this.state };
+
         Object.entries(this.state).forEach(pair => {
             const key = pair[0];
             const value = pair[1];
-            if (key == "tail") {
-                this[key].setRotationFromAxisAngle(new Vector3(1, 0, 0), value);
+            if (key === "tail") {
+                this[key].rotation.x = value;
             }
-  
-            else { this[key].setRotationFromAxisAngle(new Vector3(0, 0, 1), value); }
+
+            else {
+                this[key].rotation.z = value;
+            }
 
 
-        });
+        })
     }
 
     setState(state) {
@@ -183,7 +222,7 @@ class Doggo {
 
     startWalking() {
 
-    
+
         this.animDoggoWalking_1 = new TWEEN.Tween(this.state).to(DOGGO_WALKING_1, 500).onUpdate(() => this.update());
         this.animDoggoWalking_2 = new TWEEN.Tween(this.state).to(DOGGO_WALKING_2, 500).repeat(Infinity).yoyo(true).onUpdate(() => this.update());
 
@@ -197,42 +236,48 @@ class Doggo {
         this.setState({ ...DOGGO_INITIAL_STATE });
     }
 
-    moveTo(x,z) {
+    moveTo(x, z) {
         console.log("start movement");
         const destination = new Vector3(x, Y_COORD, z);
         const distance = destination.distanceTo(this.dogGroup.position);
         const time = (distance / SPEED) * 1000; // in milliseconds
-        
+
         const direction = new Vector3();
         this.dogGroup.getWorldDirection(direction);
         const destinationDirection = new Vector3();
-        
+
         destinationDirection.subVectors(destination, this.dogGroup.position).normalize();
-        console.log(destinationDirection);
-        console.log(direction);
-        const destinationDirectionObj = {x: destinationDirection.x, z: destinationDirection.z};
+        console.log("destination direction", destinationDirection);
+        console.log("current direction", direction);
+        const destinationDirectionObj = { x: destinationDirection.x, z: destinationDirection.z };
+        const angle = { y: 0 };
         
-        const rotation = new TWEEN.Tween(direction)
-            .to(destinationDirectionObj, 1000)
-            .onUpdate(() => this.dogGroup.lookAt(direction))
+        const rotation = new TWEEN.Tween(angle)
+            .to({ y: direction.angleTo(destinationDirection) }, 1000)
+            .onUpdate(() => {console.log("angleUpdate", angle.y);this.dogGroup.rotation.y = angle.y})
             .onComplete(() => {
-                console.log(direction);
+                console.log("after", direction);
+                console.log("world direction: ", this.dogGroup.getWorldDirection());
                 this.startWalking();
                 new TWEEN.Tween(this.dogGroup.position)
                     .to({ x, z }, time)
                     .start()
                     .onComplete(() => this.stopWalking());
             })
-            
+
         rotation.start();
     }
 
     takeTheBall() {
+        //this.rootGroup.lookAt(10, Y_COORD, 10);
+        //this.torso.rotateY(Math.PI / 2);
+        this.rootGroup.rotation.x = 3.14 / 2;
+        console.log(this.rootGroup.rotation);
         console.error("Not Implemented");
     }
 
     putTheBall() {
-        
+
     }
 }
 
@@ -260,7 +305,7 @@ function createArm() {
 
     upperArmCylinder.add(pivot);
     pivot.add(lowerArmCylinder);
-    
+
     lowerArmCylinder.translateY(-0.15);
 
     return upperArmCylinder;
