@@ -150,7 +150,7 @@ function initialization(reactComponent) {
         logInTheConsole: () => {console.log(doggo.state)},
         startWalking: () => doggo.startWalking(),
         stopWalking: () => doggo.stopWalking(),
-        move: () => doggo.moveTo(0, 10),
+        move: () => doggo.moveTo(10, 10),
         takeBall: () => doggo.takeTheBall(),
         
      };
