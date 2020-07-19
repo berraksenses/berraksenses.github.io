@@ -235,6 +235,16 @@ class Doggo {
         this.animDoggoWalking_2.stop();
         this.setState({ ...DOGGO_INITIAL_STATE });
     }
+    /**
+     * 
+     * @param {Vector3} currDirection 
+     * @param {Vector3} destinationDirection 
+     */
+    getAngleSignOfRotation(currDirection, destinationDirection) {
+        const crossProduct = new Vector3();
+        crossProduct.crossVectors(currDirection, destinationDirection);
+        return Math.sign(crossProduct.y);
+    }
 
     moveTo(x, z) {
         console.log("start movement");
@@ -249,12 +259,17 @@ class Doggo {
         destinationDirection.subVectors(destination, this.dogGroup.position).normalize();
         console.log("destination direction", destinationDirection);
         console.log("current direction", direction);
-        const destinationDirectionObj = { x: destinationDirection.x, z: destinationDirection.z };
+        // const destinationDirectionObj = { x: destinationDirection.x, z: destinationDirection.z };
         const angle = { y: 0 };
         
+        const rotationSign = this.getAngleSignOfRotation(direction, destinationDirection);
+
         const rotation = new TWEEN.Tween(angle)
             .to({ y: direction.angleTo(destinationDirection) }, 1000)
-            .onUpdate(() => {console.log("angleUpdate", angle.y);this.dogGroup.rotation.y = angle.y})
+            .onUpdate(() => {
+                console.log("angleUpdate", angle.y);
+                this.dogGroup.rotation.y = rotationSign * angle.y
+            })
             .onComplete(() => {
                 console.log("after", direction);
                 console.log("world direction: ", this.dogGroup.getWorldDirection());
