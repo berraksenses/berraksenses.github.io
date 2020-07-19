@@ -86,29 +86,26 @@ class Doggo {
         neckCylinder.translateX(-0.5);
         neckCylinder.translateY(0.2);
         headMesh.translateY(0.3);
-        headMesh.rotateZ(-Math.PI / 7); //due to neck, also the head is rotated. with this it is reversed.
+
+
         neckCylinder.rotateZ(Math.PI / 7);
+        headMesh.rotateZ(-Math.PI / 7); //due to neck, also the head is rotated. with this it is reversed.
 
-        rightDogArm.translateX(0.3);
-        rightDogArm.translateY(-0.3);
-        rightDogArm.translateZ(0.2);
+        rightDogArm.translateX(-0.3);
+        rightDogArm.translateY(-0.25);
+        rightDogArm.translateZ(0.13);
 
+        rightDogLeg.translateX(0.25);
+        rightDogLeg.translateY(-0.25);
+        rightDogLeg.translateZ(0.13);
 
-        leftDogArm.translateX(0.3);
-        leftDogArm.translateY(-0.3);
-        //leftDogArm.translateZ(-0.2);
+        leftDogArm.translateX(-0.3);
+        leftDogArm.translateY(-0.25);
+        leftDogArm.translateZ(-0.13);
 
-
-        rightDogLeg.translateX(-0.3);
-        rightDogLeg.translateY(-0.3);
-        rightDogLeg.translateZ(0.2);
-
-
-        leftDogLeg.translateX(-0.3);
-        leftDogLeg.translateY(-0.3);
-        leftDogLeg.translateZ(-0.2);
-
-        //leftDogArm.children[0].rotateZ(Math.PI);
+        leftDogLeg.translateX(0.25);
+        leftDogLeg.translateY(-0.25);
+        leftDogLeg.translateZ(-0.13);
 
         torsoMesh.add(leftDogArm);
         torsoMesh.add(leftDogLeg);
@@ -248,43 +245,23 @@ function createArm() {
     let upperArmCylinderGeometry;
     let lowerArmCylinderGeometry;
 
-    //if (dogLegFlag) {
-    //    armMaterial = new THREE.MeshPhongMaterial({ color: 0xD2691E });
 
-    //    upperArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
-    //    upperArmCylinder = new THREE.Mesh(upperArmCylinderGeometry, armMaterial);
-
-    //    lowerArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
-    //    lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial);
-
-    //} else {
-    const armMaterial2 = new THREE.MeshPhongMaterial({ color: 0xcfffff });
 
     armMaterial = new THREE.MeshPhongMaterial({ color: 0xD2691E });
     upperArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
     upperArmCylinder = new THREE.Mesh(upperArmCylinderGeometry, armMaterial);
 
-    var pivot = new THREE.Object3D();
-    //pivot.translateY(0.25, 0); // MOVE THE PIVOT BACK TO WORLD ORIGN
-    //upperArmCylinder.add(pivot); // THIS ADDS THE PIVOT TO THE CENTRE OF THE GEOMOETRY, WHICH WAS THEN ADDING MESH2 IN THE WRONG PLACE
 
     lowerArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
-    lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial2);
+    lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial);
 
-    
-
-
-    var pivot = new THREE.Group();
+    var pivot = new THREE.Object3D();
     pivot.translateY(-0.20);
-    lowerArmCylinder.translateY(-0.15);
 
     upperArmCylinder.add(pivot);
     pivot.add(lowerArmCylinder);
     
-
-    //lowerArmCylinder.translateY(-0.35);
-
-    //lowerArmCylinder.rotateZ(Math.PI);
+    lowerArmCylinder.translateY(-0.15);
 
     return upperArmCylinder;
 
