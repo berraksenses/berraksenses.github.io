@@ -158,6 +158,13 @@ function initialization(reactComponent) {
         },
         putBall: () => {
             doggo.putTheBall();
+        },
+        throwBall: () => {
+            const ball = new Ball();
+            scene.add(ball);
+            const startPosition = new Vector3(0, 0, 0);
+            const direction = new Vector3(0, 0, 1);
+            ball.throwFrom2(startPosition, direction);
         }
         
      };
@@ -180,6 +187,7 @@ function initialization(reactComponent) {
     dogFolder.add(guiButtons, 'move');
     dogFolder.add(guiButtons, 'takeBall');
     dogFolder.add(guiButtons, 'putBall');
+    dogFolder.add(guiButtons, 'throwBall');
 
     
     gui.remember(doggo.state);
