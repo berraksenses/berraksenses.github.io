@@ -43,3 +43,17 @@ export const WALKING_2 = {
     tail: -0.4,
     torso: 0
 }
+
+export const TAKING_BALL = {
+    leftLowerArm: 2.3658038766478366,
+    leftLowerLeg: 0.009744729926696394,
+    leftUpperArm: -1.5147641297163954,
+    leftUpperLeg: -0.5446221281253374,
+    neck: 1.1184784460307622,
+    rightLowerArm: 2.3658038766478366,
+    rightLowerLeg: 0.009744729926696394,
+    rightUpperArm: -1.5147641297163954,
+    rightUpperLeg: -0.5446221281253374,
+    tail: 0,
+    torso: 0.7027033024917371,
+}

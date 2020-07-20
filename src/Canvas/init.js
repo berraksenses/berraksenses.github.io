@@ -39,6 +39,7 @@ import {
     WALKING_2 as DOGGO_WALKING_2,
 } from './KeyFrames/doggo';
 import { Vector3 } from 'three';
+import Ball from './Models/Ball';
 
 
 
@@ -151,7 +152,13 @@ function initialization(reactComponent) {
         startWalking: () => doggo.startWalking(),
         stopWalking: () => doggo.stopWalking(),
         move: () => doggo.moveTo(10, 10),
-        takeBall: () => doggo.takeTheBall(),
+        takeBall: () => {
+            const ball = new Ball();
+            doggo.takeTheBall(ball)
+        },
+        putBall: () => {
+            doggo.putTheBall();
+        }
         
      };
     const gui = new dat.GUI();
@@ -172,6 +179,7 @@ function initialization(reactComponent) {
     dogFolder.add(guiButtons, 'stopWalking');
     dogFolder.add(guiButtons, 'move');
     dogFolder.add(guiButtons, 'takeBall');
+    dogFolder.add(guiButtons, 'putBall');
 
     
     gui.remember(doggo.state);

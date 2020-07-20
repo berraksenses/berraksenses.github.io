@@ -1,11 +1,13 @@
 import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
-import { Vector3 } from 'three';
+import { Vector3, Object3D } from 'three';
 import {
     INITIAL_STATE as DOGGO_INITIAL_STATE,
     WALKING_1 as DOGGO_WALKING_1,
     WALKING_2 as DOGGO_WALKING_2,
+    TAKING_BALL
 } from '../../KeyFrames/doggo';
+import Ball from '../Ball';
 const Y_COORD = 0.85;
 const SPEED = 5; // meters per second
 
@@ -116,12 +118,16 @@ class Doggo {
         torsoMesh.add(neckCylinder);
         neckCylinder.add(headMesh);
 
-
+        this.ballContainer = new Object3D();
+        
+        this.ballContainer.position.x= -0.3;
+        this.ballContainer.position.y = -0.2;
+        headMesh.add(this.ballContainer);
 
         this.dogGroup.add(torsoMesh);
         //this.dogGroup.rotateY(Math.PI / 2);
 
-
+        this.head = headMesh;
 
         this.torso = torsoMesh;
 
@@ -188,18 +194,6 @@ class Doggo {
 
     update() {
 
-        // const difference = {};
-        // Object.entries(this.state).forEach(([k, v]) => {
-        //     const diff = v - this.prevState[k];
-        //     if (diff !== 0) difference[k] = diff;
-        // });
-
-        // Object.entries(difference).forEach( ([k, v]) => {
-        //     if (k === 'tail') this[k].rotateX(v);
-        //     else this[k].rotateZ(v);
-        // });
-        // this.prevState = { ...this.state };
-
         Object.entries(this.state).forEach(pair => {
             const key = pair[0];
             const value = pair[1];
@@ -261,7 +255,7 @@ class Doggo {
         console.log("current direction", direction);
         // const destinationDirectionObj = { x: destinationDirection.x, z: destinationDirection.z };
         const angle = { y: 0 };
-        
+
         const rotationSign = this.getAngleSignOfRotation(direction, destinationDirection);
 
         const rotation = new TWEEN.Tween(angle)
@@ -282,17 +276,53 @@ class Doggo {
 
         rotation.start();
     }
+    /**
+     * 
+     * @param {Object3D} ball 
+     */
+    takeTheBall(ball) {
+        ball.position.set(0, 0, 0);
+        const forwardAnim = new TWEEN.Tween(this.state)
+            .to(TAKING_BALL, 1000)
+            .onUpdate(() => this.update())
+            .onComplete(() => this.ballContainer.add(ball));
+        
+        const backwardAnim = new TWEEN.Tween(this.state)
+            .to(DOGGO_INITIAL_STATE, 1000)
+            .onUpdate(() => this.update());
+        
+        forwardAnim.chain(backwardAnim);
+        forwardAnim.start();
 
-    takeTheBall() {
-        //this.rootGroup.lookAt(10, Y_COORD, 10);
-        //this.torso.rotateY(Math.PI / 2);
-        this.rootGroup.rotation.x = 3.14 / 2;
-        console.log(this.rootGroup.rotation);
-        console.error("Not Implemented");
     }
 
     putTheBall() {
-
+        const LENGTH = 1;
+        if (this.ballContainer.children.length === 0) {
+            
+            console.error("The dog doesn't have the ball");
+            return;
+        }
+        const direction = new Vector3();
+        this.dogGroup.getWorldDirection(direction);
+        
+        const ball = this.ballContainer.children[0];
+        const forwardAnim = new TWEEN.Tween(this.state)
+            .to(TAKING_BALL, 1000)
+            .onUpdate(() => this.update())
+            .onComplete(() => {
+                this.rootGroup.parent.add(ball);
+                ball.position.x = this.rootGroup.position.x + direction.x * LENGTH;
+                ball.position.y = 0 + Ball.RADIUS;
+                ball.position.z = this.rootGroup.position.z + direction.z * LENGTH;
+            });
+        
+        const backwardAnim = new TWEEN.Tween(this.state)
+            .to(DOGGO_INITIAL_STATE, 1000)
+            .onUpdate(() => this.update());
+        
+        forwardAnim.chain(backwardAnim);
+        forwardAnim.start();
     }
 }
 
