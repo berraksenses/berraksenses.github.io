@@ -13,13 +13,10 @@ import houseTexture from './Models/download2.jpeg';
 import treeObj from './Models/tree2.obj';
 import bark from './Models/bark.png';
 import leaf from './Models/leaf.png';
-import headTexture from './Models/images.png';
 import TWEEN from '@tweenjs/tween.js';
 import Doggo from './Models/Doggo';
-
-
-import skinTexture from './Models/skinTexture.jpg';
-import shirtTexture from './Models/shirt.jpg';
+import Humanoid from './Models/Humanoid';
+import Stats from 'stats.js';
 
 import fenceObj from './Models/Fence.obj';
 import cremeTexture from './Models/creme.jpg';
@@ -33,87 +30,11 @@ import {
     AMBIENT_LIGHT_INTENSITY
 } from '../constants';
 
-import {
-    INITIAL_STATE as DOGGO_INITIAL_STATE,
-    WALKING_1 as DOGGO_WALKING_1,
-    WALKING_2 as DOGGO_WALKING_2,
-} from './KeyFrames/doggo';
 import { Vector3 } from 'three';
 import Ball from './Models/Ball';
 
 
 
-const initialState = {
-    humanoid: {
-        torso: 0,
-        neck: 0,
-
-        leftUpperArm: 0,
-        rightUpperArm: 0,
-
-        leftLowerArm: 0,
-        rightLowerArm: 0,
-
-        rightUpperLeg: 0,
-        leftUpperLeg: 0,
-
-        rightLowerLeg: 0,
-        leftLowerLeg: 0,
-    },
-    dog: {
-        torso: 0,
-        neck: 0,
-        tail: 0,
-
-        leftUpperArm: 0,
-        rightUpperArm: 0,
-
-        leftLowerArm: 0,
-        rightLowerArm: 0,
-
-        rightUpperLeg: 0,
-        leftUpperLeg: 0,
-
-        rightLowerLeg: 0,
-        leftLowerLeg: 0,
-    }
-}
-
-const states = {
-    humanoid: {
-        torso: 0,
-        neck: 0,
-
-        leftUpperArm: 0,
-        rightUpperArm: 0,
-
-        leftLowerArm: 0,
-        rightLowerArm: 0,
-
-        rightUpperLeg: 0,
-        leftUpperLeg: 0,
-
-        rightLowerLeg: 0,
-        leftLowerLeg: 0,
-    },
-    dog: {
-        torso: 0,
-        neck: 0,
-        tail: 0,
-
-        leftUpperArm: 0,
-        rightUpperArm: 0,
-
-        leftLowerArm: 0,
-        rightLowerArm: 0,
-
-        rightUpperLeg: 0,
-        leftUpperLeg: 0,
-
-        rightLowerLeg: 0,
-        leftLowerLeg: 0,
-    }
-}
 // window.dogState = states.dog;
 
 
@@ -126,8 +47,8 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xfffff1);
 
 
-const humanGroup = new THREE.Object3D();
-const humanUpperGroup = new THREE.Object3D();
+// const humanGroup = new THREE.Object3D();
+// const humanUpperGroup = new THREE.Object3D();
 let renderer;
 
 function initialization(reactComponent) {
@@ -137,7 +58,7 @@ function initialization(reactComponent) {
     camera.position.set(-1, 3, 7);
     camera.lookAt(0, 0, 0);
 
-    createHumanoid();
+
 
     //scene.add(doggo.rootGroup);
 
@@ -147,6 +68,7 @@ function initialization(reactComponent) {
     renderer.render(scene, camera);
 
     const doggo = new Doggo(scene);
+    const humanoid = new Humanoid(scene);
     const guiButtons = { 
         logInTheConsole: () => {console.log(doggo.state)},
         startWalking: () => doggo.startWalking(),
@@ -188,6 +110,17 @@ function initialization(reactComponent) {
     dogFolder.add(guiButtons, 'takeBall');
     dogFolder.add(guiButtons, 'putBall');
     dogFolder.add(guiButtons, 'throwBall');
+
+    const humanoidFolder = gui.addFolder('Humanoid');
+    humanoidFolder.add(humanoid.state, 'leftUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+    humanoidFolder.add(humanoid.state, 'rightUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() =>humanoid.update());
+    humanoidFolder.add(humanoid.state, 'leftLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+    humanoidFolder.add(humanoid.state, 'rightLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+    humanoidFolder.add(humanoid.state, 'rightUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() =>humanoid.update());
+    humanoidFolder.add(humanoid.state, 'leftUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+    humanoidFolder.add(humanoid.state, 'rightLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+    humanoidFolder.add(humanoid.state, 'leftLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+
 
     
     gui.remember(doggo.state);
@@ -352,7 +285,17 @@ function initialization(reactComponent) {
         scene.add(directionalLight);
         scene.add(directionalLight.target);
     }
+    const stats = new Stats();
+    stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+    document.body.appendChild( stats.dom );
 
+    function animate() {
+	    stats.begin();
+
+	    // monitored code goes here
+	    stats.end();
+
+    }
     const mainLoop = () => {
         TWEEN.update();
         if (resizeRendererToDisplaySize(renderer)) {
@@ -362,7 +305,7 @@ function initialization(reactComponent) {
             camera.updateProjectionMatrix();
         }
 
-
+        animate();
 
         renderer.render(scene, camera);
         // when canvas is removed from dom then stop the infinite loop
@@ -370,168 +313,6 @@ function initialization(reactComponent) {
             requestAnimationFrame(mainLoop);
     }
     mainLoop();
-}
-
-
-function createArm(dogLegFlag) {
-
-    let armMaterial;
-
-    let lowerArmCylinder;
-    let upperArmCylinder;
-    let upperArmCylinderGeometry;
-    let lowerArmCylinderGeometry;
-
-    //if (dogLegFlag) {
-    //    armMaterial = new THREE.MeshPhongMaterial({ color: 0xD2691E });
-
-    //    upperArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
-    //    upperArmCylinder = new THREE.Mesh(upperArmCylinderGeometry, armMaterial);
-
-    //    lowerArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
-    //    lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial);
-
-    //} else {
-    const armMaterial2 = new THREE.MeshPhongMaterial({ color: 0xcfffff });
-
-    armMaterial = new THREE.MeshPhongMaterial({ color: 0xD2691E });
-    upperArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
-    upperArmCylinder = new THREE.Mesh(upperArmCylinderGeometry, armMaterial);
-
-    lowerArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
-    lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial2);
-
-
-    upperArmCylinder.add(lowerArmCylinder);
-    lowerArmCylinder.translateY(-0.35);
-
-    //lowerArmCylinder.rotateZ(Math.PI);
-
-    return upperArmCylinder;
-
-}
-
-function createLegs() {
-
-    let upperLegCylinderGeometry;
-    let upperLegCylinder;
-
-    let lowerLegCylinderGeometry;
-    let lowerLegCylinder;
-    let legMaterial = new THREE.MeshPhongMaterial({ color: 0xc11f0f });
-    let legMaterial2 = new THREE.MeshPhongMaterial({ color: 0xc11fff });
-
-
-    upperLegCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.95, 0.005);
-    upperLegCylinder = new THREE.Mesh(upperLegCylinderGeometry, legMaterial);
-
-    lowerLegCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.25, 0.005);
-    lowerLegCylinder = new THREE.Mesh(lowerLegCylinderGeometry, legMaterial2);
-
-    lowerLegCylinder.translateY(-0.6);
-    upperLegCylinder.add(lowerLegCylinder);
-
-    return upperLegCylinder;
-
-}
-
-
-
-function createHumanoid() {
-
-    var textureLoader = new THREE.TextureLoader();
-    var headTexture2 = textureLoader.load(headTexture);
-
-
-    var skinTexture2 = textureLoader.load(skinTexture);
-
-    var shirtTex = textureLoader.load(shirtTexture);
-
-    const dogLegFlag = false;
-
-    const torsoCylinderGeometry = new THREE.CylinderGeometry(0.23, 0.23, 0.95, 0.35);
-    const torsoCylinderMaterial = new THREE.MeshPhongMaterial({ color: 0xcf1ff6 });
-
-    const torsoCylinder = new THREE.Mesh(torsoCylinderGeometry, torsoCylinderMaterial);
-
-    const neckCylinderGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.18, 0.05);
-    const neckCylinderMaterial = new THREE.MeshPhongMaterial({ color: 0xfedaab });
-
-    const neckCylinder = new THREE.Mesh(neckCylinderGeometry, neckCylinderMaterial);
-
-    humanGroup.position.set(-2, 1.33, -4);
-    torsoCylinder.add(neckCylinder);
-
-    const sphereGeometry = new THREE.SphereBufferGeometry(
-        0.28, 20, 20);
-
-    const headMaterial = new THREE.MeshPhongMaterial({ color: 0xfedaab, map: headTexture2 });
-    const headMesh = new THREE.Mesh(sphereGeometry, headMaterial);
-
-    headMesh.name = "head"
-    neckCylinder.add(headMesh);
-    torsoCylinder.name = "torso"
-
-    headMesh.translateY(0.27);
-    //headMesh.rotateY(- Math.PI/180 * 60);
-    neckCylinder.translateY(0.55);
-
-    const leftArms = createArm(dogLegFlag);
-    const rightArms = createArm(dogLegFlag);
-
-    const leftLegs = createLegs();
-    const rightLegs = createLegs();
-
-    rightArms.translateX(0.29);
-    rightArms.translateY(0.25);
-
-    leftArms.translateX(-0.27);
-    leftArms.translateY(0.25);
-
-    rightLegs.translateX(0.08);
-    rightLegs.translateY(-0.55);
-
-    leftLegs.translateX(-0.12);
-    leftLegs.translateY(-0.55);
-
-    torsoCylinder.add(rightArms);
-    torsoCylinder.add(leftArms);
-
-    humanUpperGroup.add(torsoCylinder);
-    humanUpperGroup.add(leftLegs);
-    humanUpperGroup.add(rightLegs);
-    //humanUpperGroup.translateY(-0.2); when you will use the decreasing part of the upper body you will use this in the animation
-    //humanUpperGroup.rotateZ(radians); //when the human will get the stick from the ground he will use this to lay down 
-    humanGroup.add(humanUpperGroup);
-
-    humanGroup.traverse(function (child) {
-        if (child.name === "torso") {
-
-            child.material = new THREE.MeshPhongMaterial({
-
-
-                map: shirtTex,
-                side: THREE.DoubleSide
-            });
-
-        }
-        else if (child.name !== "head") child.material = new THREE.MeshPhongMaterial({
-
-
-            map: skinTexture2,
-            side: THREE.DoubleSide
-        });
-
-
-
-        //texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    
-
-    });
-
-
-    //humanGroup.scale.set(1,1,1.2); 
-    scene.add(humanGroup);
 }
 
 

@@ -62,7 +62,7 @@ class Ball extends Object3D {
         const trajectory = this.computeTrajectory();
         console.log('Trajectory', trajectory);
         const initPos = startPosVec;
-        const TIME = 200;
+        const TIME = 100;
         let prevPos = initPos;
         const tweens = trajectory.map((pair, i) => {
             const nextPos = {
@@ -86,7 +86,7 @@ class Ball extends Object3D {
 
     }
 
-    trajectoryFormula(x, angle = 10, initialSpeed = 10, initialHeight = 2   ) {
+    trajectoryFormula(x, angle = 10, initialSpeed = 10, initialHeight = 2) {
         return initialHeight + (x * Math.tan(angle) - (10 /( 2 * (initialSpeed**2) * (Math.cos(angle))**2)) * (x**2));
     }
 
