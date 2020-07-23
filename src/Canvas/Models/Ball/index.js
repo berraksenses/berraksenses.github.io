@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+// eslint-disable-next-line
 import { Object3D, Vector3 } from "three";
 import TWEEN from '@tweenjs/tween.js';
 
@@ -43,13 +44,14 @@ class Ball extends Object3D {
         );
     }
 
-    computeTrajectory(steps = 10) {
+    computeTrajectory(steps = 10, initialHeight) {
+        console.log('args:', arguments);
         const diff = Ball.THROWING_DISTANCE / steps;
         const pairs = [];
         let x;
         for (let i = 0; i <= steps; i++) {
             x = diff * i;
-            pairs.push([x, this.trajectoryFormula(x)]);
+            pairs.push([x, this.trajectoryFormula(x, undefined, undefined, initialHeight)]);
         }
         return pairs;
     }
@@ -59,7 +61,8 @@ class Ball extends Object3D {
      * @param {Vector3} directionVec 
      */
     throwFrom2(startPosVec, directionVec) {
-        const trajectory = this.computeTrajectory();
+        
+        const trajectory = this.computeTrajectory(10, 0);
         console.log('Trajectory', trajectory);
         const initPos = startPosVec;
         const TIME = 100;
@@ -77,7 +80,8 @@ class Ball extends Object3D {
             prevPos = { ...nextPos};
             return tw;
         });
-        const chain = tweens.reduce((acc, tw) => {
+        tweens.shift();
+        tweens.reduce((acc, tw) => {
             acc.chain(tw);
             return tw;
         });

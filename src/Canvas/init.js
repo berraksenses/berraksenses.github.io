@@ -46,9 +46,6 @@ const camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.inner
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xfffff1);
 
-
-// const humanGroup = new THREE.Object3D();
-// const humanUpperGroup = new THREE.Object3D();
 let renderer;
 
 function initialization(reactComponent) {
@@ -87,7 +84,20 @@ function initialization(reactComponent) {
             const startPosition = new Vector3(0, 0, 0);
             const direction = new Vector3(0, 0, 1);
             ball.throwFrom2(startPosition, direction);
+        },
+        logHumanoid: () => {
+            console.log("HUMANOID");
+            console.log(humanoid.state);
+            console.log("Y: ", humanoid.humanGroup.position.y);
+        },
+        humanoidTakingBall: () => {
+            const ball = new Ball();
+            humanoid.takeTheBall(ball);
+        },
+        humanoidThrowingBall: () => {
+            humanoid.throwTheBall();
         }
+
         
      };
     const gui = new dat.GUI();
@@ -120,7 +130,13 @@ function initialization(reactComponent) {
     humanoidFolder.add(humanoid.state, 'leftUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
     humanoidFolder.add(humanoid.state, 'rightLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
     humanoidFolder.add(humanoid.state, 'leftLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
-
+    humanoidFolder.add(humanoid.state, 'torsoCylinder', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+    //humanoidFolder.add(humanoid.humanGroup.position, 'x', -2, 2).onChange(() => humanoid.update());
+    humanoidFolder.add(humanoid.humanGroup.position, 'y', 0, 1.5);
+    humanoidFolder.add(guiButtons, 'logHumanoid');
+    humanoidFolder.add(guiButtons, 'humanoidTakingBall');
+    humanoidFolder.add(guiButtons, 'humanoidThrowingBall');
+    //humanoidFolder.add(humanoid.humanGroup.position, 'z', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
 
     
     gui.remember(doggo.state);

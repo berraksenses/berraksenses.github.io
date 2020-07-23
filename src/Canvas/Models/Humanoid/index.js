@@ -3,7 +3,16 @@ import headTexture from '../images.png';
 import skinTexture from '../skinTexture.jpg';
 import shirtTexture from '../shirt.jpg';
 // eslint-disable-next-line
-import { Scene } from 'three';
+import { Scene, Object3D, Vector3 } from 'three';
+// eslint-disable-next-line
+import Ball from '../Ball';
+import {
+    TAKING_BALL,
+    INITIAL_STATE,
+    THROWING_1,
+    THROWING_2
+} from '../../KeyFrames/humanoid';
+import TWEEN from '@tweenjs/tween.js';
 
 class Humanoid {
 
@@ -32,7 +41,7 @@ class Humanoid {
 
         const neckCylinder = new THREE.Mesh(neckCylinderGeometry, neckCylinderMaterial);
 
-        humanGroup.position.set(-2, 1.33, -4);
+        humanGroup.position.set(-2, 1.1, -4);
         torsoCylinder.add(neckCylinder);
 
         const sphereGeometry = new THREE.SphereBufferGeometry(
@@ -70,9 +79,25 @@ class Humanoid {
         torsoCylinder.add(rightArms);
         torsoCylinder.add(leftArms);
 
-        humanUpperGroup.add(torsoCylinder);
-        humanUpperGroup.add(leftLegs);
-        humanUpperGroup.add(rightLegs);
+        torsoCylinder.position.y = 0.45;
+
+        const torsoPivot = new Object3D();
+        torsoPivot.add(torsoCylinder);
+        torsoPivot.position.y = -0.35;
+
+        const rightLegPivot = new Object3D();
+        rightLegPivot.add(rightLegs);
+        rightLegs.position.y = -0.2;
+        rightLegPivot.position.y = -0.35;
+
+        const leftLegPivot = new Object3D();
+        leftLegPivot.add(leftLegs);
+        leftLegs.position.y = -0.2;
+        leftLegPivot.position.y = -0.35;
+
+        humanUpperGroup.add(torsoPivot);
+        humanUpperGroup.add(rightLegPivot);
+        humanUpperGroup.add(leftLegPivot);
         humanGroup.add(humanUpperGroup);
 
         humanGroup.traverse(function (child) {
@@ -97,72 +122,120 @@ class Humanoid {
         });
 
         this.humanGroup = humanGroup;
-        
+
 
         this.leftUpperArm = leftArms;
         this.rightUpperArm = rightArms;
 
-        this.leftLowerArm = leftArms.children[0];
-        this.rightLowerArm = rightArms.children[0];
+        this.leftLowerArm = leftArms.children[0].children[0];
+        this.rightLowerArm = rightArms.children[0].children[0];
 
-        this.rightUpperLeg = rightLegs;
-        this.leftUpperLeg = leftLegs;
+        this.rightUpperLeg = rightLegPivot;
+        this.leftUpperLeg = leftLegPivot;
 
         this.rightLowerLeg = rightLegs.children[0];
         this.leftLowerLeg = leftLegs.children[0];
 
+        this.torsoCylinder = torsoPivot;
+
         this.state = {
-    
+
+            torsoCylinder: 0,
+
             leftUpperArm: 0,
             rightUpperArm: 0,
-    
+
             leftLowerArm: 0,
             rightLowerArm: 0,
-    
+
             rightUpperLeg: 0,
             leftUpperLeg: 0,
-    
+
             rightLowerLeg: 0,
             leftLowerLeg: 0,
+            positionY: 1.1,
         };
+
         if (scene) scene.add(this.humanGroup);
         const axesHelper = new THREE.AxesHelper(5);
         this.humanGroup.add(axesHelper);
+
+        this.ballContainer = new Object3D();
+        leftArms.children[0].children[0].add(this.ballContainer);
+        this.ballContainer.position.y = -0.3;
     }
 
     update() {
         Object.entries(this.state).forEach(pair => {
             const key = pair[0];
             const value = pair[1];
-            this[key].rotation.x = value;
-            
-
-
+            if (key === 'positionY') this.humanGroup.position.y = value;
+            else this[key].rotation.x = value;
         })
     }
 
     /**
      * Take the ball from the ground into the arm
+     * @param {Ball} ball
      */
-    takeTheBall() {
+    takeTheBall(ball) {
+        const promise = new Promise((resolve) => {
+            const forwardAnim = new TWEEN.Tween(this.state)
+                .to(TAKING_BALL, 1000)
+                .onUpdate((st) => {
+                    console.log(st);
+                    this.update()
+                }).onComplete(() => this.ballContainer.add(ball));
 
+            const backwardAnim = new TWEEN.Tween(this.state)
+                .to(INITIAL_STATE, 1000)
+                .onUpdate(() => this.update())
+                .onComplete(resolve);
+
+            forwardAnim.chain(backwardAnim);
+            forwardAnim.start();
+        });
+        return promise;
     }
     /**
      * Throw the ball
+     * 
      */
     throwTheBall() {
+        const ball = this.ballContainer.children[0];
+        if (!ball) {
+            console.error("The human doesn't have a ball");
+            return;
+        }
 
+        const direction = new Vector3(0, 0, 1);
+        const throwing1 = new TWEEN.Tween(this.state)
+            .to(THROWING_1, 1100)
+            .onUpdate((st) => {
+                console.log(st);
+                this.update()
+            });
+
+        const throwing2 = new TWEEN.Tween(this.state)
+            .to(THROWING_2, 50)
+            .onUpdate(() => this.update())
+            .onComplete(() => {
+                const position = ball.getWorldPosition();
+                this.humanGroup.parent.add(ball);
+                ball.position.set(position.x, position.y, position.z);
+                ball.throwFrom2(position, direction)
+            });
+        const throwing3 = new TWEEN.Tween(this.state)
+            .to(INITIAL_STATE, 600)
+            .onUpdate(() => this.update());
+        throwing1.chain(throwing2);
+        throwing2.chain(throwing3);
+        throwing1.start();
     }
 }
 
 function createArm() {
 
-    // let armMaterial;
-
-    // let lowerArmCylinder;
-    // let upperArmCylinder;
-    // let upperArmCylinderGeometry;
-    // let lowerArmCylinderGeometry;
 
     const armMaterial2 = new THREE.MeshPhongMaterial({ color: 0xcfffff });
 
@@ -173,23 +246,24 @@ function createArm() {
     const lowerArmCylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.35, 0.005);
     const lowerArmCylinder = new THREE.Mesh(lowerArmCylinderGeometry, armMaterial2);
 
+    const pivot = new THREE.Object3D();
+    pivot.translateY(-0.2);
+    pivot.add(lowerArmCylinder);
 
-    upperArmCylinder.add(lowerArmCylinder);
-    lowerArmCylinder.translateY(-0.35);
+    upperArmCylinder.add(pivot);
+    lowerArmCylinder.translateY(-0.15);
 
-    //lowerArmCylinder.rotateZ(Math.PI);
+    const upperArmPivot = new Object3D();
+    upperArmCylinder.position.y = -0.17;
+    upperArmPivot.add(upperArmCylinder);
+    upperArmPivot.position.y = 0.17;
 
-    return upperArmCylinder;
+    return upperArmPivot;
 
 }
 
 function createLegs() {
 
-    // let upperLegCylinderGeometry;
-    // let upperLegCylinder;
-
-    // let lowerLegCylinderGeometry;
-    // let lowerLegCylinder;
     const legMaterial = new THREE.MeshPhongMaterial({ color: 0xc11f0f });
     const legMaterial2 = new THREE.MeshPhongMaterial({ color: 0xc11fff });
 
@@ -201,12 +275,12 @@ function createLegs() {
     const lowerLegCylinder = new THREE.Mesh(lowerLegCylinderGeometry, legMaterial2);
 
     const pivot = new THREE.Object3D();
-    pivot.translateY(-0.20);
+    pivot.translateY(-0.25);
+    pivot.add(lowerLegCylinder);
 
-    lowerLegCylinder.translateY(-0.5);
-    upperLegCylinder.add(lowerLegCylinder);
+    lowerLegCylinder.translateY(-0.25);
+    upperLegCylinder.add(pivot);
 
-    
 
     return upperLegCylinder;
 
