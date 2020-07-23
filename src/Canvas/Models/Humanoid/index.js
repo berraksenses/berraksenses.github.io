@@ -177,6 +177,7 @@ class Humanoid {
     /**
      * Take the ball from the ground into the arm
      * @param {Ball} ball
+     * @returns {Promise}
      */
     takeTheBall(ball) {
         const promise = new Promise((resolve) => {
@@ -199,38 +200,41 @@ class Humanoid {
     }
     /**
      * Throw the ball
-     * 
+     * @returns {Promise}
      */
     throwTheBall() {
         const ball = this.ballContainer.children[0];
         if (!ball) {
             console.error("The human doesn't have a ball");
-            return;
+            return Promise.reject();
         }
-
-        const direction = new Vector3(0, 0, 1);
-        const throwing1 = new TWEEN.Tween(this.state)
-            .to(THROWING_1, 1100)
-            .onUpdate((st) => {
-                console.log(st);
-                this.update()
-            });
-
-        const throwing2 = new TWEEN.Tween(this.state)
-            .to(THROWING_2, 50)
-            .onUpdate(() => this.update())
-            .onComplete(() => {
-                const position = ball.getWorldPosition();
-                this.humanGroup.parent.add(ball);
-                ball.position.set(position.x, position.y, position.z);
-                ball.throwFrom2(position, direction)
-            });
-        const throwing3 = new TWEEN.Tween(this.state)
-            .to(INITIAL_STATE, 600)
-            .onUpdate(() => this.update());
-        throwing1.chain(throwing2);
-        throwing2.chain(throwing3);
-        throwing1.start();
+        const promise = new Promise((resolve) => {
+            const direction = new Vector3(0, 0, 1);
+            const throwing1 = new TWEEN.Tween(this.state)
+                .to(THROWING_1, 1100)
+                .onUpdate((st) => {
+                    console.log(st);
+                    this.update()
+                });
+    
+            const throwing2 = new TWEEN.Tween(this.state)
+                .to(THROWING_2, 50)
+                .onUpdate(() => this.update())
+                .onComplete(() => {
+                    const position = ball.getWorldPosition();
+                    this.humanGroup.parent.add(ball);
+                    ball.position.set(position.x, position.y, position.z);
+                    ball.throwFrom2(position, direction)
+                });
+            const throwing3 = new TWEEN.Tween(this.state)
+                .to(INITIAL_STATE, 600)
+                .onUpdate(() => this.update())
+                .onComplete(resolve);
+            throwing1.chain(throwing2);
+            throwing2.chain(throwing3);
+            throwing1.start();
+        });
+        return promise;
     }
 }
 
