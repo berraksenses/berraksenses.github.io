@@ -14,6 +14,7 @@ export const INITIAL_STATE = {
 
     rightLowerLeg: 0,
     leftLowerLeg: 0,
+    positionY: 0.65
 };
 
 export const WALKING_1 = {
@@ -27,7 +28,8 @@ export const WALKING_1 = {
     rightUpperArm: -0.9832138426383452,
     rightUpperLeg: -0.9832138426383452,
     tail: 0.4,
-    torso: 0
+    torso: 0,
+    positionY: 0.65
 }
 
 export const WALKING_2 = {
@@ -41,7 +43,8 @@ export const WALKING_2 = {
     rightUpperArm: 0.3832138426383452,
     rightUpperLeg: 0.3832138426383452,
     tail: -0.4,
-    torso: 0
+    torso: 0,
+    positionY: 0.65
 }
 
 export const TAKING_BALL = {
@@ -56,4 +59,20 @@ export const TAKING_BALL = {
     rightUpperLeg: -0.5446221281253374,
     tail: 0,
     torso: 0.7027033024917371,
+    positionY: 0.65,
+}
+
+export const SIT_DOWN = {
+    leftLowerArm: 0,
+    leftLowerLeg: 2.0886204476218193,
+    leftUpperArm: 0.7027033024917371,
+    leftUpperLeg: -1.5147641297163954,
+    neck: 0.7027033024917371,
+    rightLowerArm: 0,
+    rightLowerLeg: 2.0886204476218193,
+    rightUpperArm: 0.7027033024917371,
+    rightUpperLeg: -1.5147641297163954,
+    tail: 0,
+    torso: -0.6832138426383452,
+    positionY: 0.45,
 }

@@ -184,9 +184,12 @@ class Humanoid {
             const forwardAnim = new TWEEN.Tween(this.state)
                 .to(TAKING_BALL, 1000)
                 .onUpdate((st) => {
-                    console.log(st);
+                    // console.log(st);
                     this.update()
-                }).onComplete(() => this.ballContainer.add(ball));
+                }).onComplete(() => {
+                    this.ballContainer.add(ball)
+                    ball.position.set(0, 0, 0);
+                });
 
             const backwardAnim = new TWEEN.Tween(this.state)
                 .to(INITIAL_STATE, 1000)
@@ -213,7 +216,7 @@ class Humanoid {
             const throwing1 = new TWEEN.Tween(this.state)
                 .to(THROWING_1, 1100)
                 .onUpdate((st) => {
-                    console.log(st);
+                    // console.log(st);
                     this.update()
                 });
     
@@ -224,17 +227,31 @@ class Humanoid {
                     const position = ball.getWorldPosition();
                     this.humanGroup.parent.add(ball);
                     ball.position.set(position.x, position.y, position.z);
-                    ball.throwFrom2(position, direction)
+                    ball.throwFrom2(position, direction, resolve)
                 });
             const throwing3 = new TWEEN.Tween(this.state)
                 .to(INITIAL_STATE, 600)
-                .onUpdate(() => this.update())
-                .onComplete(resolve);
+                .onUpdate(() => this.update());
+                //.onComplete(resolve);
             throwing1.chain(throwing2);
             throwing2.chain(throwing3);
             throwing1.start();
         });
         return promise;
+    }
+    /**
+     * @returns {Vector3}
+     */
+    getBallPlacePosition() {
+        const length = 1;
+        const position = this.humanGroup.position.clone();
+        const direction = this.humanGroup.getWorldDirection();
+
+        position.x = position.x + direction.x * length;
+        position.y = 0;
+        position.z = position.z + direction.z * length;
+
+        return position;
     }
 }
 

@@ -29,15 +29,15 @@ class Ball extends Object3D {
      * @param {Vector3} directionVec
      */
     throwFrom(startPosVec, directionVec) {
-        console.log("Ball is THROWN from", startPosVec);
+        //console.log("Ball is THROWN from", startPosVec);
         this.position.set(startPosVec.x, startPosVec.y, startPosVec.z);
-        console.log("position", this.position)
+        //console.log("position", this.position)
         directionVec.normalize();
         const destination = {};
         destination.x = startPosVec.x + directionVec.x * Ball.THROWING_DISTANCE;
         destination.y = Ball.RADIUS;
         destination.z = startPosVec.z + directionVec.z * Ball.THROWING_DISTANCE;
-        console.log("destination", destination);
+        //console.log("destination", destination);
         
         new TWEEN.Tween(this.position).easing(TWEEN.Easing.Bounce.Out).to(destination, 1000).start().onComplete(
             () => console.log("completed")
@@ -60,10 +60,10 @@ class Ball extends Object3D {
      * @param {Vector3} startPosVec 
      * @param {Vector3} directionVec 
      */
-    throwFrom2(startPosVec, directionVec) {
+    throwFrom2(startPosVec, directionVec, cb) {
         
         const trajectory = this.computeTrajectory(10, 0);
-        console.log('Trajectory', trajectory);
+        //console.log('Trajectory', trajectory);
         const initPos = startPosVec;
         const TIME = 100;
         let prevPos = initPos;
@@ -73,10 +73,11 @@ class Ball extends Object3D {
                 y: initPos.y + pair[1],
                 z: initPos.z + directionVec.z * pair[0]
             };
-            console.log('prevPos', {...prevPos})
-            console.log('nextPos', {...nextPos});
+            if (i === (trajectory.length-1)) nextPos.y = Ball.RADIUS;
+            //console.log('prevPos', {...prevPos})
+            //console.log('nextPos', {...nextPos});
             const tw = new TWEEN.Tween({ ...prevPos }).to({ ...nextPos }, TIME)
-                .onUpdate(obj => this.position.set(obj.x, obj.y, obj.z)).onComplete(() => console.log(i));
+                .onUpdate(obj => this.position.set(obj.x, obj.y, obj.z));
             prevPos = { ...nextPos};
             return tw;
         });
@@ -85,7 +86,9 @@ class Ball extends Object3D {
             acc.chain(tw);
             return tw;
         });
-        // tweens[0].chain(tweens[1]).chain(tweens[2]);
+        if (cb) {
+            tweens[tweens.length - 1].onComplete(cb);
+        }
         tweens[0].start();
 
     }

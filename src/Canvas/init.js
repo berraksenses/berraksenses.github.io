@@ -66,6 +66,11 @@ function initialization(reactComponent) {
 
     const doggo = new Doggo(scene);
     const humanoid = new Humanoid(scene);
+    const humanoidBallPosition = humanoid.getBallPlacePosition();
+    const ball = new Ball();
+    ball.position.set(humanoidBallPosition.x, humanoidBallPosition.y, humanoidBallPosition.z);
+    console.log("humanoidBallPosition", humanoidBallPosition);
+    scene.add(ball);
     const guiButtons = { 
         logInTheConsole: () => {console.log(doggo.state)},
         startWalking: () => doggo.startWalking(),
@@ -96,9 +101,17 @@ function initialization(reactComponent) {
         },
         humanoidThrowingBall: () => {
             humanoid.throwTheBall();
+        },
+        startProcess: () => {
+            
+            humanoid.takeTheBall(ball)
+                .then(() => humanoid.throwTheBall())
+                .then(() => doggo.standUpAndMoveTo(ball.position.x, ball.position.z))
+                .then(() => doggo.takeTheBall(ball))
+                .then(() => doggo.moveTo(humanoidBallPosition.x, humanoidBallPosition.z))
+                .then(() => doggo.putTheBall())
+                .then(() => doggo.sitDown());
         }
-
-        
      };
     const gui = new dat.GUI();
     const dogFolder = gui.addFolder('Doggo');
@@ -136,6 +149,7 @@ function initialization(reactComponent) {
     humanoidFolder.add(guiButtons, 'logHumanoid');
     humanoidFolder.add(guiButtons, 'humanoidTakingBall');
     humanoidFolder.add(guiButtons, 'humanoidThrowingBall');
+    humanoidFolder.add(guiButtons, 'startProcess');
     //humanoidFolder.add(humanoid.humanGroup.position, 'z', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
 
     
