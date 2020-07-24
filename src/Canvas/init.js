@@ -167,7 +167,7 @@ function initialization(reactComponent) {
                 var textureLoader = new THREE.TextureLoader();
                 var texture = textureLoader.load(imge);
                 root.traverse(function (child) {
-                    if (child.isMesh) child.material = new THREE.MeshBasicMaterial({
+                    if (child.isMesh) child.material = new THREE.MeshPhongMaterial({
                         //color:     0x996633,
                         //specular:  0x050505,
                         //shininess: my_shine_value,
@@ -275,14 +275,18 @@ function initialization(reactComponent) {
 
             var topFence = fence.clone(); // or any other coordinates
 
+     
             topFence.rotateY(Math.PI / 2);
             topFence.scale.set(0.2, 0.15, 0.48);
             topFence.position.set(-31, -0.8, -25);
+       var endFence = topFence.clone();
 
+            endFence.position.set(-31, -0.8, 19.5 );
 
             rightFence.translateX(45);
             scene.add(topFence);
             scene.add(rightFence);
+            scene.add(endFence);
         });
 
 
