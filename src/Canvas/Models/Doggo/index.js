@@ -186,8 +186,8 @@ class Doggo {
         this.animDoggoWalking_1 = new TWEEN.Tween(this.state).to(DOGGO_WALKING_1, 500).onUpdate(() => this.update());
         this.animDoggoWalking_2 = new TWEEN.Tween(this.state).to(DOGGO_WALKING_2, 500).repeat(Infinity).yoyo(true).onUpdate(() => this.update());
 
-        const axesHelper = new THREE.AxesHelper(5);
-        this.dogGroup.add(axesHelper);
+        // const axesHelper = new THREE.AxesHelper(5);
+        // this.dogGroup.add(axesHelper);
 
         parent.add(this.dogGroup);
         this.torso.rotateY(Math.PI / 2);

@@ -48,7 +48,7 @@ scene.background = new THREE.Color(0xfffff1);
 
 let renderer;
 
-function initialization(reactComponent) {
+function initialization(reactComponent, loadingCB) {
 
 
     camera.up.set(0, 1, 0);
@@ -71,6 +71,15 @@ function initialization(reactComponent) {
     ball.position.set(humanoidBallPosition.x, humanoidBallPosition.y, humanoidBallPosition.z);
     console.log("humanoidBallPosition", humanoidBallPosition);
     scene.add(ball);
+    const startProcess = () => {
+        humanoid.takeTheBall(ball)
+                .then(() => humanoid.throwTheBall())
+                .then(() => doggo.standUpAndMoveTo(ball.position.x, ball.position.z))
+                .then(() => doggo.takeTheBall(ball))
+                .then(() => doggo.moveTo(humanoidBallPosition.x, humanoidBallPosition.z))
+                .then(() => doggo.putTheBall())
+                .then(() => doggo.sitDown());
+    }
     const guiButtons = { 
         logInTheConsole: () => {console.log(doggo.state)},
         startWalking: () => doggo.startWalking(),
@@ -103,57 +112,98 @@ function initialization(reactComponent) {
             humanoid.throwTheBall();
         },
         startProcess: () => {
+            startProcess();
             
-            humanoid.takeTheBall(ball)
-                .then(() => humanoid.throwTheBall())
-                .then(() => doggo.standUpAndMoveTo(ball.position.x, ball.position.z))
-                .then(() => doggo.takeTheBall(ball))
-                .then(() => doggo.moveTo(humanoidBallPosition.x, humanoidBallPosition.z))
-                .then(() => doggo.putTheBall())
-                .then(() => doggo.sitDown());
         }
-     };
-    const gui = new dat.GUI();
-    const dogFolder = gui.addFolder('Doggo');
-    dogFolder.add(doggo.state, 'torso', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(doggo.state, 'neck', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(doggo.state, 'tail', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(doggo.state, 'leftUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(doggo.state, 'rightUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(doggo.state, 'leftLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(doggo.state, 'rightLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(doggo.state, 'rightUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(doggo.state, 'leftUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(doggo.state, 'rightLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(doggo.state, 'leftLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
-    dogFolder.add(guiButtons, 'logInTheConsole');
-    dogFolder.add(guiButtons, 'startWalking');
-    dogFolder.add(guiButtons, 'stopWalking');
-    dogFolder.add(guiButtons, 'move');
-    dogFolder.add(guiButtons, 'takeBall');
-    dogFolder.add(guiButtons, 'putBall');
-    dogFolder.add(guiButtons, 'throwBall');
+    };
 
-    const humanoidFolder = gui.addFolder('Humanoid');
-    humanoidFolder.add(humanoid.state, 'leftUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
-    humanoidFolder.add(humanoid.state, 'rightUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() =>humanoid.update());
-    humanoidFolder.add(humanoid.state, 'leftLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
-    humanoidFolder.add(humanoid.state, 'rightLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
-    humanoidFolder.add(humanoid.state, 'rightUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() =>humanoid.update());
-    humanoidFolder.add(humanoid.state, 'leftUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
-    humanoidFolder.add(humanoid.state, 'rightLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
-    humanoidFolder.add(humanoid.state, 'leftLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
-    humanoidFolder.add(humanoid.state, 'torsoCylinder', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
-    //humanoidFolder.add(humanoid.humanGroup.position, 'x', -2, 2).onChange(() => humanoid.update());
-    humanoidFolder.add(humanoid.humanGroup.position, 'y', 0, 1.5);
-    humanoidFolder.add(guiButtons, 'logHumanoid');
-    humanoidFolder.add(guiButtons, 'humanoidTakingBall');
-    humanoidFolder.add(guiButtons, 'humanoidThrowingBall');
-    humanoidFolder.add(guiButtons, 'startProcess');
-    //humanoidFolder.add(humanoid.humanGroup.position, 'z', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
 
+    const datGUI = () => {
+        const gui = new dat.GUI();
+        const dogFolder = gui.addFolder('Doggo');
+        dogFolder.add(doggo.state, 'torso', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+        dogFolder.add(doggo.state, 'neck', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+        dogFolder.add(doggo.state, 'tail', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+        dogFolder.add(doggo.state, 'leftUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+        dogFolder.add(doggo.state, 'rightUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+        dogFolder.add(doggo.state, 'leftLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+        dogFolder.add(doggo.state, 'rightLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+        dogFolder.add(doggo.state, 'rightUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+        dogFolder.add(doggo.state, 'leftUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+        dogFolder.add(doggo.state, 'rightLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+        dogFolder.add(doggo.state, 'leftLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => doggo.update());
+        dogFolder.add(guiButtons, 'logInTheConsole');
+        dogFolder.add(guiButtons, 'startWalking');
+        dogFolder.add(guiButtons, 'stopWalking');
+        dogFolder.add(guiButtons, 'move');
+        dogFolder.add(guiButtons, 'takeBall');
+        dogFolder.add(guiButtons, 'putBall');
+        dogFolder.add(guiButtons, 'throwBall');
     
-    gui.remember(doggo.state);
+        const humanoidFolder = gui.addFolder('Humanoid');
+        humanoidFolder.add(humanoid.state, 'leftUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+        humanoidFolder.add(humanoid.state, 'rightUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() =>humanoid.update());
+        humanoidFolder.add(humanoid.state, 'leftLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+        humanoidFolder.add(humanoid.state, 'rightLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+        humanoidFolder.add(humanoid.state, 'rightUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() =>humanoid.update());
+        humanoidFolder.add(humanoid.state, 'leftUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+        humanoidFolder.add(humanoid.state, 'rightLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+        humanoidFolder.add(humanoid.state, 'leftLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+        humanoidFolder.add(humanoid.state, 'torsoCylinder', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+        //humanoidFolder.add(humanoid.humanGroup.position, 'x', -2, 2).onChange(() => humanoid.update());
+        humanoidFolder.add(humanoid.humanGroup.position, 'y', 0, 1.5);
+        humanoidFolder.add(guiButtons, 'logHumanoid');
+        humanoidFolder.add(guiButtons, 'humanoidTakingBall');
+        humanoidFolder.add(guiButtons, 'humanoidThrowingBall');
+        humanoidFolder.add(guiButtons, 'startProcess');
+    }
+    
+    //humanoidFolder.add(humanoid.humanGroup.position, 'z', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
+    const stats = new Stats();
+    stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+    document.body.appendChild( stats.dom );
+
+    function animate() {
+	    stats.begin();
+
+	    // monitored code goes here
+	    stats.end();
+
+    }
+    const mainLoop = () => {
+        TWEEN.update();
+        if (resizeRendererToDisplaySize(renderer)) {
+            const canvas = renderer.domElement;
+
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+        }
+
+        animate();
+
+        renderer.render(scene, camera);
+        // when canvas is removed from dom then stop the infinite loop
+        if (reactComponent.isActive)
+            requestAnimationFrame(mainLoop);
+    }
+    
+    const onLoad = () => { 
+        mainLoop();
+        loadingCB();
+        window.document.addEventListener('keydown', event => {
+            const code = event.keyCode;
+            if (code === 16 || code === 32 || code === 13) {
+                startProcess();
+            }
+
+        })    
+    };
+    
+    // emulated the loading process;
+    setTimeout(() => {
+        onLoad();
+    }, 1000);
+    
 
     //doggo.update();
 
@@ -161,8 +211,8 @@ function initialization(reactComponent) {
     controls.target.set(0, 2, -1);
     controls.update();
 
-    const axesHelper = new THREE.AxesHelper( 5 );
-    scene.add( axesHelper );
+    // const axesHelper = new THREE.AxesHelper( 5 );
+    // scene.add( axesHelper );
 
     {
 
@@ -319,34 +369,7 @@ function initialization(reactComponent) {
         scene.add(directionalLight);
         scene.add(directionalLight.target);
     }
-    const stats = new Stats();
-    stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-    document.body.appendChild( stats.dom );
-
-    function animate() {
-	    stats.begin();
-
-	    // monitored code goes here
-	    stats.end();
-
-    }
-    const mainLoop = () => {
-        TWEEN.update();
-        if (resizeRendererToDisplaySize(renderer)) {
-            const canvas = renderer.domElement;
-
-            camera.aspect = canvas.clientWidth / canvas.clientHeight;
-            camera.updateProjectionMatrix();
-        }
-
-        animate();
-
-        renderer.render(scene, camera);
-        // when canvas is removed from dom then stop the infinite loop
-        if (reactComponent.isActive)
-            requestAnimationFrame(mainLoop);
-    }
-    mainLoop();
+    
 }
 
 
@@ -360,6 +383,7 @@ function resizeRendererToDisplaySize(renderer) {
     }
     return needResize;
 }
+
 
 
 

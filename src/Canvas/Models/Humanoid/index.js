@@ -157,8 +157,8 @@ class Humanoid {
         };
 
         if (scene) scene.add(this.humanGroup);
-        const axesHelper = new THREE.AxesHelper(5);
-        this.humanGroup.add(axesHelper);
+        // const axesHelper = new THREE.AxesHelper(5);
+        // this.humanGroup.add(axesHelper);
 
         this.ballContainer = new Object3D();
         leftArms.children[0].children[0].add(this.ballContainer);
