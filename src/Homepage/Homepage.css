@@ -36,7 +36,7 @@ p { font: trebuchet ms, sans-serif }
     color: white;
     cursor: pointer;
     letter-spacing: 4px;
-    transition: background-color 1s, color 1s;
+    transition: background-color 0.7s, color 0.7s;
     margin: 20px;
 
 }
