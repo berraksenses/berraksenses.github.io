@@ -1,0 +1,34 @@
+{
+  "files": {
+    "main.css": "/finalProject/static/css/main.e3d32c9d.chunk.css",
+    "main.js": "/finalProject/static/js/main.bab22afe.chunk.js",
+    "main.js.map": "/finalProject/static/js/main.bab22afe.chunk.js.map",
+    "runtime-main.js": "/finalProject/static/js/runtime-main.8dffc51e.js",
+    "runtime-main.js.map": "/finalProject/static/js/runtime-main.8dffc51e.js.map",
+    "static/js/2.5eabf4e0.chunk.js": "/finalProject/static/js/2.5eabf4e0.chunk.js",
+    "static/js/2.5eabf4e0.chunk.js.map": "/finalProject/static/js/2.5eabf4e0.chunk.js.map",
+    "index.html": "/finalProject/index.html",
+    "precache-manifest.3a00756235a71a97662cd013d844d14a.js": "/finalProject/precache-manifest.3a00756235a71a97662cd013d844d14a.js",
+    "service-worker.js": "/finalProject/service-worker.js",
+    "static/css/main.e3d32c9d.chunk.css.map": "/finalProject/static/css/main.e3d32c9d.chunk.css.map",
+    "static/js/2.5eabf4e0.chunk.js.LICENSE.txt": "/finalProject/static/js/2.5eabf4e0.chunk.js.LICENSE.txt",
+    "static/media/10450_Rectangular_Grass_Patch_v1_Diffuse.jpeg": "/finalProject/static/media/10450_Rectangular_Grass_Patch_v1_Diffuse.11fdb98f.jpeg",
+    "static/media/10450_Rectangular_Grass_Patch_v1_iterations-2.mtl": "/finalProject/static/media/10450_Rectangular_Grass_Patch_v1_iterations-2.27d19274.mtl",
+    "static/media/10450_Rectangular_Grass_Patch_v1_iterations-2.obj": "/finalProject/static/media/10450_Rectangular_Grass_Patch_v1_iterations-2.972d22eb.obj",
+    "static/media/Fence.obj": "/finalProject/static/media/Fence.bf6e2636.obj",
+    "static/media/Thai_house.obj": "/finalProject/static/media/Thai_house.1a7dd781.obj",
+    "static/media/bark.png": "/finalProject/static/media/bark.382176cd.png",
+    "static/media/creme.jpg": "/finalProject/static/media/creme.358102cb.jpg",
+    "static/media/Homepage.css": "/finalProject/static/media/grass.a3430e05.jpg",
+    "static/media/leaf.png": "/finalProject/static/media/leaf.fb599f5d.png",
+    "static/media/shirt.jpg": "/finalProject/static/media/shirt.8397dda6.jpg",
+    "static/media/skinTexture.jpg": "/finalProject/static/media/skinTexture.06eb0b47.jpg",
+    "static/media/tree2.obj": "/finalProject/static/media/tree2.a6e38cb0.obj"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.8dffc51e.js",
+    "static/js/2.5eabf4e0.chunk.js",
+    "static/css/main.e3d32c9d.chunk.css",
+    "static/js/main.bab22afe.chunk.js"
+  ]
+}
