@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+
 import { MtlObjBridge } from 'three/examples/jsm/loaders/obj2/bridge/MtlObjBridge.js';
 
 import dat from 'dat.gui';
@@ -37,6 +38,7 @@ import Ball from './Models/Ball';
 
 // window.dogState = states.dog;
 
+var loadingManager = new THREE.LoadingManager();
 
 const fov = 45;
 const near = 0.001;
@@ -201,7 +203,7 @@ function initialization(reactComponent, loadingCB) {
             const code = event.keyCode;
             if (code === 16 || code === 32 || code === 13) {
                 startProcess();
-            }
+            }//add the human rotation part in here
 
         })    
     };
@@ -218,8 +220,9 @@ function initialization(reactComponent, loadingCB) {
 
     {
 
-        const mtlLoader = new MTLLoader();
-        const objLoader = new OBJLoader2();
+
+        const mtlLoader = new MTLLoader(loadingManager);
+        const objLoader = new OBJLoader2(loadingManager);
 
         mtlLoader.load(grassMaterial, (mtlParseResult) => {
             mtlParseResult.preload();
@@ -260,10 +263,10 @@ function initialization(reactComponent, loadingCB) {
             });
         });
 
-        const houseObjLoader = new OBJLoader2();
+        const houseObjLoader = new OBJLoader2(loadingManager);
 
         houseObjLoader.load(house, (littleHouse) => {
-            var textureLoader = new THREE.TextureLoader();
+            var textureLoader = new THREE.TextureLoader(loadingManager);
             var texture = textureLoader.load(houseTexture);
             littleHouse.traverse(function (child) {
                 if (child.isMesh) child.material = new THREE.MeshPhongMaterial({
@@ -282,13 +285,12 @@ function initialization(reactComponent, loadingCB) {
             littleHouse.rotateY(-2 * Math.PI);
             littleHouse.position.set(-10, -0.8, -20);
             littleHouse.scale.set(1, 1, 0.5);
-            onLoad();
         });
 
-        const treeObjLoader = new OBJLoader2();
+        const treeObjLoader = new OBJLoader2(loadingManager);
 
         treeObjLoader.load(treeObj, (tree) => {
-            var textureLoader = new THREE.TextureLoader();
+            var textureLoader = new THREE.TextureLoader(loadingManager);
             var textureLeaf = textureLoader.load(leaf);
             var textureBark = textureLoader.load(bark);
             var texture;
@@ -319,10 +321,10 @@ function initialization(reactComponent, loadingCB) {
         });
 
 
-        const fenceObjLoader = new OBJLoader2();
+        const fenceObjLoader = new OBJLoader2(loadingManager);
 
         fenceObjLoader.load(fenceObj, (fence) => {
-            var textureLoader = new THREE.TextureLoader();
+            var textureLoader = new THREE.TextureLoader(loadingManager);
             var texture = textureLoader.load(cremeTexture);
             fence.traverse(function (child) {
                 if (child.isMesh) child.material = new THREE.MeshPhongMaterial({
@@ -360,7 +362,7 @@ function initialization(reactComponent, loadingCB) {
             scene.add(endFence);
         });
 
-
+        loadingManager.onLoad = function () { console.log('Loading complete!'); onLoad(); }; 
 
     }
 
