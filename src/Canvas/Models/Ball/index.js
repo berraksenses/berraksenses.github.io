@@ -2,7 +2,6 @@ import * as THREE from 'three';
 // eslint-disable-next-line
 import { Object3D, Vector3 } from "three";
 import TWEEN from '@tweenjs/tween.js';
-import Humanoid from '../Humanoid/index';
 
 class Ball extends Object3D {
     static RADIUS = 0.1;
@@ -35,7 +34,7 @@ class Ball extends Object3D {
         //console.log("position", this.position)
         directionVec.normalize();
         const destination = {};
-        destination.x = startPosVec.x + Humanoid.direction.x * Ball.THROWING_DISTANCE;
+        destination.x = startPosVec.x + directionVec.x * Ball.THROWING_DISTANCE;
         destination.y = Ball.RADIUS;
         destination.z = startPosVec.z + directionVec.z * Ball.THROWING_DISTANCE;
         //console.log("destination", destination);

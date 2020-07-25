@@ -208,6 +208,8 @@ class Humanoid {
      */
     throwTheBall() {
         const ball = this.ballContainer.children[0];
+        const direction = new Vector3();
+        this.humanGroup.getWorldDirection(direction);
         if (!ball) {
             console.error("The human doesn't have a ball");
             return Promise.reject();
@@ -228,7 +230,7 @@ class Humanoid {
                     const position = ball.getWorldPosition();
                     this.humanGroup.parent.add(ball);
                     ball.position.set(position.x, position.y, position.z);
-                    ball.throwFrom2(position, this.direction, resolve)
+                    ball.throwFrom2(position, direction, resolve)
                 });
             const throwing3 = new TWEEN.Tween(this.state)
                 .to(INITIAL_STATE, 600)

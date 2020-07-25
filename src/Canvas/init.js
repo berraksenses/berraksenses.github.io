@@ -47,7 +47,7 @@ const camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.inner
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xfffff1);
-let humanoid;
+
 let renderer;
 
 function initialization(reactComponent, loadingCB) {
@@ -67,8 +67,8 @@ function initialization(reactComponent, loadingCB) {
     renderer.render(scene, camera);
 
     const doggo = new Doggo(scene);
-    humanoid = new Humanoid(scene);
-    const humanoidBallPosition = humanoid.getBallPlacePosition();
+    const humanoid = new Humanoid(scene);
+    let humanoidBallPosition = humanoid.getBallPlacePosition();
     const ball = new Ball();
     ball.position.set(humanoidBallPosition.x, humanoidBallPosition.y, humanoidBallPosition.z);
     console.log("humanoidBallPosition", humanoidBallPosition);
@@ -78,6 +78,7 @@ function initialization(reactComponent, loadingCB) {
     const startProcess = () => {
         if (isAnimationInProgress) return;
         isAnimationInProgress = true;
+        humanoidBallPosition = humanoid.getBallPlacePosition();
         humanoid.takeTheBall(ball)
             .then(() => humanoid.throwTheBall())
             .then(() => doggo.standUpAndMoveTo(ball.position.x, ball.position.z))
@@ -200,12 +201,11 @@ function initialization(reactComponent, loadingCB) {
         mainLoop();
         loadingCB();
         window.document.addEventListener('keydown', event => {
+            if (isAnimationInProgress) return;
             const code = event.keyCode;
             if (code === 16 || code === 32 || code === 13) {
                 startProcess();
-            }
-            else if (code === 37) {
-                event.stopImmediatePropagation();
+            } else if (code === 37) {
                 if (humanoid.humanGroup.rotation.y <= 1.57) {
 
                     humanoid.humanGroup.rotateY(Math.PI / 180 * 10);
