@@ -225,11 +225,11 @@ class Doggo {
      */
     standUp() {
         this.isSitting = false;
-        console.log("INITIAL_STATE", DOGGO_INITIAL_STATE);
+        // console.log("INITIAL_STATE", DOGGO_INITIAL_STATE);
         
         const promise = new Promise((resolve) => {
             new TWEEN.Tween(this.state).to(DOGGO_INITIAL_STATE, 500).onUpdate((obj) => {
-                console.log("UPDATE", obj);
+                // console.log("UPDATE", obj);
                 this.update()
             }).onComplete(resolve).start();
         });
@@ -268,7 +268,7 @@ class Doggo {
     }
     standUpAndMoveTo(x, z) {
         if (this.isSitting) {
-            console.log("sitting");
+            // console.log("sitting");
             return this.standUp().then(() => this.moveTo(x, z));
         } 
         return this.moveTo(x, z);
@@ -276,7 +276,7 @@ class Doggo {
     }
     moveTo(x, z) {
         const promise = new Promise((resolve) => {
-            console.log("===== MOVE TO =====");
+            // console.log("===== MOVE TO =====");
             const destination = new Vector3(x, Y_COORD, z);
             const direction = new Vector3();
             this.dogGroup.getWorldDirection(direction);

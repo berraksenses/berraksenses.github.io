@@ -45,7 +45,7 @@ class Ball extends Object3D {
     }
 
     computeTrajectory(steps = 10, initialHeight) {
-        console.log('args:', arguments);
+        //console.log('args:', arguments);
         const diff = Ball.THROWING_DISTANCE / steps;
         const pairs = [];
         let x;
