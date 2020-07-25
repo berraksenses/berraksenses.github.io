@@ -206,13 +206,8 @@ function initialization(reactComponent, loadingCB) {
         })    
     };
     
-    // emulated the loading process;
-    setTimeout(() => {
-        onLoad();
-    }, 1000);
-    
 
-    //doggo.update();
+
 
     const controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 2, -1);
@@ -233,6 +228,8 @@ function initialization(reactComponent, loadingCB) {
                 material.side = THREE.DoubleSide;
             }
             objLoader.addMaterials(materials);
+
+
             objLoader.load(grass, (root) => {
 
                 var textureLoader = new THREE.TextureLoader();
@@ -253,11 +250,13 @@ function initialization(reactComponent, loadingCB) {
                 root.updateMatrixWorld();
                 scene.add(root);
 
+               
+
                 root.rotateZ(Math.PI);
                 root.rotateX(Math.PI / 2);
                 root.position.set(0, -0.8, -4);
                 root.scale.set(0.15, 0.15, 0.08);
-
+                
             });
         });
 
@@ -283,6 +282,7 @@ function initialization(reactComponent, loadingCB) {
             littleHouse.rotateY(-2 * Math.PI);
             littleHouse.position.set(-10, -0.8, -20);
             littleHouse.scale.set(1, 1, 0.5);
+            onLoad();
         });
 
         const treeObjLoader = new OBJLoader2();
