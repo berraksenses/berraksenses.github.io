@@ -71,14 +71,21 @@ function initialization(reactComponent, loadingCB) {
     ball.position.set(humanoidBallPosition.x, humanoidBallPosition.y, humanoidBallPosition.z);
     console.log("humanoidBallPosition", humanoidBallPosition);
     scene.add(ball);
+    
+    let isAnimationInProgress = false;
     const startProcess = () => {
+        if (isAnimationInProgress) return;
+        isAnimationInProgress = true;
         humanoid.takeTheBall(ball)
                 .then(() => humanoid.throwTheBall())
                 .then(() => doggo.standUpAndMoveTo(ball.position.x, ball.position.z))
                 .then(() => doggo.takeTheBall(ball))
                 .then(() => doggo.moveTo(humanoidBallPosition.x, humanoidBallPosition.z))
                 .then(() => doggo.putTheBall())
-                .then(() => doggo.sitDown());
+                .then(() => {
+                    doggo.sitDown();
+                    isAnimationInProgress = false;
+                });
     }
     const guiButtons = { 
         logInTheConsole: () => {console.log(doggo.state)},
