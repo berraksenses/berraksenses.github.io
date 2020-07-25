@@ -360,7 +360,7 @@ class Doggo {
             return Promise.reject();
         }
         const promise = new Promise((resolve) => {
-            const direction = new Vector3();
+            const direction = new Vector3(0,0,1);
             this.dogGroup.getWorldDirection(direction);
             
             const ball = this.ballContainer.children[0];
