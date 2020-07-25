@@ -73,24 +73,24 @@ function initialization(reactComponent, loadingCB) {
     ball.position.set(humanoidBallPosition.x, humanoidBallPosition.y, humanoidBallPosition.z);
     console.log("humanoidBallPosition", humanoidBallPosition);
     scene.add(ball);
-    
+
     let isAnimationInProgress = false;
     const startProcess = () => {
         if (isAnimationInProgress) return;
         isAnimationInProgress = true;
         humanoid.takeTheBall(ball)
-                .then(() => humanoid.throwTheBall())
-                .then(() => doggo.standUpAndMoveTo(ball.position.x, ball.position.z))
-                .then(() => doggo.takeTheBall(ball))
-                .then(() => doggo.moveTo(humanoidBallPosition.x, humanoidBallPosition.z))
-                .then(() => doggo.putTheBall())
-                .then(() => {
-                    doggo.sitDown();
-                    isAnimationInProgress = false;
-                });
+            .then(() => humanoid.throwTheBall())
+            .then(() => doggo.standUpAndMoveTo(ball.position.x, ball.position.z))
+            .then(() => doggo.takeTheBall(ball))
+            .then(() => doggo.moveTo(humanoidBallPosition.x, humanoidBallPosition.z))
+            .then(() => doggo.putTheBall())
+            .then(() => {
+                doggo.sitDown();
+                isAnimationInProgress = false;
+            });
     }
-    const guiButtons = { 
-        logInTheConsole: () => {console.log(doggo.state)},
+    const guiButtons = {
+        logInTheConsole: () => { console.log(doggo.state) },
         startWalking: () => doggo.startWalking(),
         stopWalking: () => doggo.stopWalking(),
         move: () => doggo.moveTo(10, 10),
@@ -122,7 +122,7 @@ function initialization(reactComponent, loadingCB) {
         },
         startProcess: () => {
             startProcess();
-            
+
         }
     };
 
@@ -148,13 +148,13 @@ function initialization(reactComponent, loadingCB) {
         dogFolder.add(guiButtons, 'takeBall');
         dogFolder.add(guiButtons, 'putBall');
         dogFolder.add(guiButtons, 'throwBall');
-    
+
         const humanoidFolder = gui.addFolder('Humanoid');
         humanoidFolder.add(humanoid.state, 'leftUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
-        humanoidFolder.add(humanoid.state, 'rightUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() =>humanoid.update());
+        humanoidFolder.add(humanoid.state, 'rightUpperArm', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
         humanoidFolder.add(humanoid.state, 'leftLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
         humanoidFolder.add(humanoid.state, 'rightLowerArm', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
-        humanoidFolder.add(humanoid.state, 'rightUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() =>humanoid.update());
+        humanoidFolder.add(humanoid.state, 'rightUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
         humanoidFolder.add(humanoid.state, 'leftUpperLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
         humanoidFolder.add(humanoid.state, 'rightLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
         humanoidFolder.add(humanoid.state, 'leftLowerLeg', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
@@ -166,17 +166,17 @@ function initialization(reactComponent, loadingCB) {
         humanoidFolder.add(guiButtons, 'humanoidThrowingBall');
         humanoidFolder.add(guiButtons, 'startProcess');
     }
-    
+
     //humanoidFolder.add(humanoid.humanGroup.position, 'z', -2 * Math.PI, 2 * Math.PI).onChange(() => humanoid.update());
     const stats = new Stats();
-    stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-    document.body.appendChild( stats.dom );
+    stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+    document.body.appendChild(stats.dom);
 
     function animate() {
-	    stats.begin();
+        stats.begin();
 
-	    // monitored code goes here
-	    stats.end();
+        // monitored code goes here
+        stats.end();
 
     }
     const mainLoop = () => {
@@ -195,8 +195,8 @@ function initialization(reactComponent, loadingCB) {
         if (reactComponent.isActive)
             requestAnimationFrame(mainLoop);
     }
-    
-    const onLoad = () => { 
+
+    const onLoad = () => {
         mainLoop();
         loadingCB();
         window.document.addEventListener('keydown', event => {
@@ -204,23 +204,18 @@ function initialization(reactComponent, loadingCB) {
             if (code === 16 || code === 32 || code === 13) {
                 startProcess();
             }
-            else if (code == 39) {
+            else if (code === 37) {
+                event.stopImmediatePropagation();
                 if (humanoid.humanGroup.rotation.y <= 1.57) {
 
-                  humanoid.humanGroup.rotateY(Math.PI / 180 * 10);
+                    humanoid.humanGroup.rotateY(Math.PI / 180 * 10);
                     humanoid.direction.x += 0.18
 
                     if (humanoid.direction.z <= 0.4) {
-
                         humanoid.direction.z += 0.12
-
                     }
                     else {
-
                         humanoid.direction.z -= 0.12
-
-
-
                     }
 
                 }
@@ -228,7 +223,7 @@ function initialization(reactComponent, loadingCB) {
 
             }
 
-            else if (code == 37) {
+            else if (code === 39) {
                 if (humanoid.humanGroup.rotation.y >= -1.04) {
                     humanoid.humanGroup.rotateY(-Math.PI / 180 * 10);
                     humanoid.direction.x -= 0.18
@@ -238,23 +233,20 @@ function initialization(reactComponent, loadingCB) {
 
                     }
                     else {
-                       
-                            humanoid.direction.z += 0.12
 
-                        
-
+                        humanoid.direction.z += 0.12
                     }
-                                            console.log(humanoid.direction.z);
-
+                    console.log(humanoid.direction.z);
                 }
             }
-        })    
+        })
     };
-    
+
 
 
 
     const controls = new OrbitControls(camera, canvas);
+    controls.enableKeys = false;
     controls.target.set(0, 2, -1);
     controls.update();
 
@@ -296,13 +288,13 @@ function initialization(reactComponent, loadingCB) {
                 root.updateMatrixWorld();
                 scene.add(root);
 
-               
+
 
                 root.rotateZ(Math.PI);
                 root.rotateX(Math.PI / 2);
                 root.position.set(0, -0.8, -4);
                 root.scale.set(0.15, 0.15, 0.08);
-                
+
             });
         });
 
@@ -391,13 +383,13 @@ function initialization(reactComponent, loadingCB) {
 
             var topFence = fence.clone(); // or any other coordinates
 
-     
+
             topFence.rotateY(Math.PI / 2);
             topFence.scale.set(0.2, 0.15, 0.48);
             topFence.position.set(-31, -0.8, -25);
             var endFence = topFence.clone();
 
-            endFence.position.set(-31, -0.8, 19.5 );
+            endFence.position.set(-31, -0.8, 19.5);
 
             rightFence.translateX(45);
             scene.add(topFence);
@@ -405,7 +397,7 @@ function initialization(reactComponent, loadingCB) {
             scene.add(endFence);
         });
 
-        loadingManager.onLoad = function () { console.log('Loading complete!'); onLoad(); }; 
+        loadingManager.onLoad = function () { console.log('Loading complete!'); onLoad(); };
 
     }
 
@@ -421,7 +413,7 @@ function initialization(reactComponent, loadingCB) {
         scene.add(directionalLight);
         scene.add(directionalLight.target);
     }
-    
+
 }
 
 
