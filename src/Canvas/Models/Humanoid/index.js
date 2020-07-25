@@ -16,8 +16,9 @@ import TWEEN from '@tweenjs/tween.js';
 
 class Humanoid {
 
+    direction = new Vector3(0, 0, 1);
     /**
-     * 
+     *  
      * @param {Scene} scene 
      */
     constructor(scene) {
@@ -212,7 +213,7 @@ class Humanoid {
             return Promise.reject();
         }
         const promise = new Promise((resolve) => {
-            const direction = new Vector3(0, 0, 1);
+          //  const direction = new Vector3(2, 0, 1);
             const throwing1 = new TWEEN.Tween(this.state)
                 .to(THROWING_1, 1100)
                 .onUpdate((st) => {
@@ -227,7 +228,7 @@ class Humanoid {
                     const position = ball.getWorldPosition();
                     this.humanGroup.parent.add(ball);
                     ball.position.set(position.x, position.y, position.z);
-                    ball.throwFrom2(position, direction, resolve)
+                    ball.throwFrom2(position, this.direction, resolve)
                 });
             const throwing3 = new TWEEN.Tween(this.state)
                 .to(INITIAL_STATE, 600)

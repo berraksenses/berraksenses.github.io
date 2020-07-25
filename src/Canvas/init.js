@@ -47,7 +47,7 @@ const camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.inner
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xfffff1);
-
+let humanoid;
 let renderer;
 
 function initialization(reactComponent, loadingCB) {
@@ -67,7 +67,7 @@ function initialization(reactComponent, loadingCB) {
     renderer.render(scene, camera);
 
     const doggo = new Doggo(scene);
-    const humanoid = new Humanoid(scene);
+    humanoid = new Humanoid(scene);
     const humanoidBallPosition = humanoid.getBallPlacePosition();
     const ball = new Ball();
     ball.position.set(humanoidBallPosition.x, humanoidBallPosition.y, humanoidBallPosition.z);
@@ -105,8 +105,8 @@ function initialization(reactComponent, loadingCB) {
             const ball = new Ball();
             scene.add(ball);
             const startPosition = new Vector3(0, 0, 0);
-            const direction = new Vector3(0, 0, 1);
-            ball.throwFrom2(startPosition, direction);
+            console.log(humanoid.direction);
+            ball.throwFrom2(startPosition, humanoid.direction);
         },
         logHumanoid: () => {
             console.log("HUMANOID");
@@ -203,8 +203,51 @@ function initialization(reactComponent, loadingCB) {
             const code = event.keyCode;
             if (code === 16 || code === 32 || code === 13) {
                 startProcess();
-            }//add the human rotation part in here
+            }
+            else if (code == 39) {
+                if (humanoid.humanGroup.rotation.y <= 1.57) {
 
+                  humanoid.humanGroup.rotateY(Math.PI / 180 * 10);
+                    humanoid.direction.x += 0.18
+
+                    if (humanoid.direction.z <= 0.4) {
+
+                        humanoid.direction.z += 0.12
+
+                    }
+                    else {
+
+                        humanoid.direction.z -= 0.12
+
+
+
+                    }
+
+                }
+                console.log(humanoid.direction.z);
+
+            }
+
+            else if (code == 37) {
+                if (humanoid.humanGroup.rotation.y >= -1.04) {
+                    humanoid.humanGroup.rotateY(-Math.PI / 180 * 10);
+                    humanoid.direction.x -= 0.18
+                    if (humanoid.direction.z >= 1.2) {
+
+                        humanoid.direction.z -= 0.12
+
+                    }
+                    else {
+                       
+                            humanoid.direction.z += 0.12
+
+                        
+
+                    }
+                                            console.log(humanoid.direction.z);
+
+                }
+            }
         })    
     };
     
@@ -352,7 +395,7 @@ function initialization(reactComponent, loadingCB) {
             topFence.rotateY(Math.PI / 2);
             topFence.scale.set(0.2, 0.15, 0.48);
             topFence.position.set(-31, -0.8, -25);
-       var endFence = topFence.clone();
+            var endFence = topFence.clone();
 
             endFence.position.set(-31, -0.8, 19.5 );
 
